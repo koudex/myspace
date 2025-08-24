@@ -7,6 +7,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         :root {
             --primary: #252525;
@@ -164,8 +167,6 @@
             position: relative;
         }
 
-        
-
         /* About Section */
         .about-content {
             display: flex;
@@ -191,7 +192,6 @@
             border-radius: 50%;
             object-fit: cover;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            /* Add these properties for the border */
             border: 4px solid var(--accent);
             padding: 4px;
             box-sizing: border-box;
@@ -572,9 +572,54 @@
                 flex-direction: column;
             }
         }
+
+        /* Firebase Connection Status */
+        .firebase-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-connected {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .status-disconnected {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .status-connected .status-dot {
+            background-color: white;
+        }
+        
+        .status-disconnected .status-dot {
+            background-color: white;
+        }
     </style>
 </head>
 <body>
+    <!-- Firebase Connection Status Indicator -->
+    <div id="firebase-status" class="firebase-status status-disconnected">
+        <span class="status-dot"></span>
+        <span id="status-text">Connecting...</span>
+    </div>
+
     <!-- Header & Navigation -->
     <header>
         <div class="container">
@@ -687,13 +732,6 @@
         <div class="container">
             <h2 class="section-title" data-aos="fade-up">Simple Music Player</h2>
             <div class="media-container">
-                <!--<div class="video-container" data-aos="fade-right">
-                    <h3>Random Video</h3>
-                    <video class="video-player" controls autoplay muted loop>
-                        <source src="videoplayback.mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                </div>-->
                 <div class="music-container" data-aos="fade-left">
                     <h3>walang kwentang playlist</h3>
                     <div class="music-player">
@@ -764,12 +802,6 @@
     <!-- Footer -->
     <footer>
         <div class="container">
-            <!--<div class="social-links">
-                <a href="#"><i class="fab fa-github"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-linkedin"></i></a>
-            </div>-->
             <p>&copy; 2025 Johnryll Garciano. All Rights Reserved.</p>
         </div>
     </footer>
@@ -1145,225 +1177,261 @@ loadTrack(currentTrack);
     // Load the first track
     loadTrack(currentTrack);
 
-    // Freedom Wall Implementation
-const wallForm = document.getElementById('wall-form');
-const previewContent = document.getElementById('preview-content');
-const viewThreadBtn = document.getElementById('view-thread-btn');
-const threadModal = document.getElementById('thread-modal');
-const closeModalBtn = document.getElementById('close-modal');
-const messagesContainer = document.getElementById('messages-container');
-
-// Function to clean up messages older than 24 hours
-function cleanupOldMessages() {
-    const now = new Date();
-    const oneDayAgo = new Date(now.getTime() - (24 * 60 * 60 * 1000)); // 24 hours ago
-    
-    // Filter out messages older than 24 hours
-    messages = messages.filter(msg => {
-        const messageTime = new Date(msg.timestamp);
-        return messageTime > oneDayAgo;
-    });
-    
-    // Save the filtered messages back to localStorage
-    localStorage.setItem('freedomWallMessagess', JSON.stringify(messages));
-}
-
-// Function to load messages with cleanup
-function loadMessages() {
-    messages = JSON.parse(localStorage.getItem('freedomWallMessagess')) || [];
-    cleanupOldMessages(); // Remove messages older than 24 hours
-}
-
-// Store messages in localStorage
-let messages = [];
-loadMessages(); // Load and clean up messages
-
-// Function to generate a random avatar URL using DiceBear API
-function generateAvatarUrl(seed) {
-    return `https://api.dicebear.com/9.x/bottts/svg?seed=${seed}`;
-}
-
-// Function to add a new message
-function addMessage(name, message) {
-    const timestamp = new Date().toISOString();
-    const avatarSeed = name || 'Anonymous' + Date.now();
-    const newMessage = {
-        id: Date.now(),
-        name: name || 'Anonymous',
-        message: message,
-        timestamp: timestamp,
-        avatar: generateAvatarUrl(avatarSeed)
+    // Firebase Configuration and Freedom Wall Implementation
+    const firebaseConfig = {
+        // Replace with your Firebase project config
+        apiKey: "AIzaSyC4eSmx-WycFDSujVgDvWlPju68t2nlb14",
+        authDomain: "myspace-eff71.firebaseapp.com",
+        projectId: "myspace-eff71",
+        storageBucket: "myspace-eff71.firebasestorage.app",
+        messagingSenderId: "141026296672",
+        appId: "1:141026296672:web:883aeb41bfcee7948ad405"
     };
-    
-    messages.unshift(newMessage); // Add to beginning of array (newest first)
-    localStorage.setItem('freedomWallMessagess', JSON.stringify(messages));
-    
-    updatePreview();
-    updateThread();
-    
-    return newMessage;
-}
 
-// Function to update the preview with the latest message
-function updatePreview() {
-    if (messages.length > 0) {
-        const latestMessage = messages[0];
-        
-        // Create fade animation by changing opacity
-        previewContent.style.opacity = 0;
-        
-        setTimeout(() => {
-            previewContent.innerHTML = `
-                <img src="${latestMessage.avatar}" class="preview-avatar" alt="Avatar">
-                <div class="preview-name">${latestMessage.name}</div>
-                <div class="preview-message">${latestMessage.message}</div>
-                <div class="preview-time">${formatMessageTime(latestMessage.timestamp)}</div>
-            `;
-            
-            // Fade back in
-            previewContent.style.opacity = 1;
-        }, 500);
-    } else {
-        // Show default message if no messages
-        previewContent.innerHTML = `
-            <img src="https://api.dicebear.com/9.x/bottts/svg?seed=Welcome" class="preview-avatar" alt="Avatar">
-            <div class="preview-name">Welcome to the Freedom Wall!</div>
-            <div class="preview-message">Be the first to leave a message. Your thoughts will appear here.</div>
-            <div class="preview-time">Just now</div>
-        `;
-    }
-}
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-// Function to format the timestamp for display
-function formatMessageTime(timestamp) {
-    const now = new Date();
-    const messageTime = new Date(timestamp);
-    const diffInSeconds = Math.floor((now - messageTime) / 1000);
-    
-    if (diffInSeconds < 60) {
-        return 'Just now';
-    } else if (diffInSeconds < 3600) {
-        const minutes = Math.floor(diffInSeconds / 60);
-        return `${minutes} min${minutes !== 1 ? 's' : ''} ago`;
-    } else if (diffInSeconds < 86400) {
-        const hours = Math.floor(diffInSeconds / 3600);
-        return `${hours} hr${hours !== 1 ? 's' : ''} ago`;
-    } else {
-        const days = Math.floor(diffInSeconds / 86400);
-        return `${days} day${days !== 1 ? 's' : ''} ago`;
-    }
-}
+    // Reference to the messages collection
+    const messagesRef = db.collection('messages');
 
-// Function to update the thread view
-function updateThread() {
-    messagesContainer.innerHTML = '';
+    // Update connection status
+    const statusElement = document.getElementById('firebase-status');
+    const statusText = document.getElementById('status-text');
     
-    if (messages.length === 0) {
-        messagesContainer.innerHTML = '<p class="no-messages">No messages yet. Be the first to leave one!</p>';
-        return;
-    }
-    
-    messages.forEach(msg => {
-        const messageElement = document.createElement('div');
-        messageElement.className = 'message-item';
-        messageElement.innerHTML = `
-            <img src="${msg.avatar}" class="message-avatar" alt="Avatar">
-            <div class="message-content">
-                <div class="message-header">
-                    <div class="message-name">${msg.name}</div>
-                    <div class="message-time">${formatMessageTime(msg.timestamp)}</div>
-                </div>
-                <div class="message-text">${msg.message}</div>
-            </div>
-        `;
-        messagesContainer.appendChild(messageElement);
+    // Listen for connection state changes
+    db.enableNetwork()
+    .then(() => {
+        statusElement.className = 'firebase-status status-connected';
+        statusText.textContent = 'Connected';
+    })
+    .catch((err) => {
+        statusElement.className = 'firebase-status status-disconnected';
+        statusText.textContent = 'Offline - Using local messages';
+        console.log('Error enabling network:', err);
     });
-}
 
-// Function to cycle through messages in the preview
-let previewIndex = 0;
-function cyclePreviewMessages() {
-    cleanupOldMessages(); // Clean up old messages each cycle
-    
-    if (messages.length > 0) {
-        previewIndex = (previewIndex + 1) % messages.length;
-        const message = messages[previewIndex];
+    // Freedom Wall Implementation
+    const wallForm = document.getElementById('wall-form');
+    const previewContent = document.getElementById('preview-content');
+    const viewThreadBtn = document.getElementById('view-thread-btn');
+    const threadModal = document.getElementById('thread-modal');
+    const closeModalBtn = document.getElementById('close-modal');
+    const messagesContainer = document.getElementById('messages-container');
+
+    // Store messages
+    let messages = [];
+
+    // Function to generate a random avatar URL using DiceBear API
+    function generateAvatarUrl(seed) {
+        const styles = ['bottts', 'bottts-neutral', 'fun-emoji', 'identicon', 'adventurer'];
+        const randomStyle = styles[Math.floor(Math.random() * styles.length)];
+        return `https://api.dicebear.com/9.x/${randomStyle}/svg?seed=${seed}`;
+    }
+
+    // Function to add a new message to Firebase
+    function addMessageToFirebase(name, message) {
+        const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+        const avatarSeed = name || 'Anonymous' + Date.now();
         
-        // Create fade animation
-        previewContent.style.opacity = 0;
-        
-        setTimeout(() => {
-            previewContent.innerHTML = `
-                <img src="${message.avatar}" class="preview-avatar" alt="Avatar">
-                <div class="preview-name">${message.name}</div>
-                <div class="preview-message">${message.message}</div>
-                <div class="preview-time">${formatMessageTime(message.timestamp)}</div>
-            `;
+        return messagesRef.add({
+            name: name || 'Anonymous',
+            message: message,
+            timestamp: timestamp,
+            avatar: generateAvatarUrl(avatarSeed)
+        });
+    }
+
+    // Function to update the preview with the latest message
+    function updatePreview() {
+        if (messages.length > 0) {
+            const latestMessage = messages[0];
             
-            // Fade back in
-            previewContent.style.opacity = 1;
-        }, 500);
+            // Create fade animation by changing opacity
+            previewContent.style.opacity = 0;
+            
+            setTimeout(() => {
+                previewContent.innerHTML = `
+                    <img src="${latestMessage.avatar}" class="preview-avatar" alt="Avatar">
+                    <div class="preview-name">${latestMessage.name}</div>
+                    <div class="preview-message">${latestMessage.message}</div>
+                    <div class="preview-time">${formatMessageTime(latestMessage.timestamp)}</div>
+                `;
+                
+                // Fade back in
+                previewContent.style.opacity = 1;
+            }, 500);
+        } else {
+            // Show default message if no messages
+            previewContent.innerHTML = `
+                <img src="https://api.dicebear.com/9.x/bottts/svg?seed=Welcome" class="preview-avatar" alt="Avatar">
+                <div class="preview-name">Welcome to the Freedom Wall!</div>
+                <div class="preview-message">Be the first to leave a message. Your thoughts will appear here.</div>
+                <div class="preview-time">Just now</div>
+            `;
+        }
     }
-}
 
-// Event listener for form submission
-wallForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const nameInput = document.getElementById('user-name');
-    const messageInput = document.getElementById('user-message');
-    
-    const name = nameInput.value.trim();
-    const message = messageInput.value.trim();
-    
-    if (message) {
-        addMessage(name, message);
-        messageInput.value = '';
-        nameInput.value = '';
+    // Function to format the timestamp for display
+    function formatMessageTime(timestamp) {
+        if (!timestamp) return 'Just now';
         
-        // Show success feedback
-        const submitBtn = this.querySelector('button[type="submit"]');
-        const originalText = submitBtn.textContent;
-        submitBtn.textContent = 'Posted!';
-        submitBtn.style.backgroundColor = '#4CAF50';
+        const now = new Date();
+        const messageTime = timestamp.toDate();
+        const diffInSeconds = Math.floor((now - messageTime) / 1000);
         
-        setTimeout(() => {
-            submitBtn.textContent = originalText;
-            submitBtn.style.backgroundColor = '';
-        }, 2000);
+        if (diffInSeconds < 60) {
+            return 'Just now';
+        } else if (diffInSeconds < 3600) {
+            const minutes = Math.floor(diffInSeconds / 60);
+            return `${minutes} min${minutes !== 1 ? 's' : ''} ago`;
+        } else if (diffInSeconds < 86400) {
+            const hours = Math.floor(diffInSeconds / 3600);
+            return `${hours} hr${hours !== 1 ? 's' : ''} ago`;
+        } else {
+            const days = Math.floor(diffInSeconds / 86400);
+            return `${days} day${days !== 1 ? 's' : ''} ago`;
+        }
     }
-});
 
-// Event listeners for modal
-viewThreadBtn.addEventListener('click', function() {
-    updateThread();
-    threadModal.style.display = 'block';
-    document.body.style.overflow = 'hidden';
-});
+    // Function to update the thread view
+    function updateThread() {
+        messagesContainer.innerHTML = '';
+        
+        if (messages.length === 0) {
+            messagesContainer.innerHTML = '<p class="no-messages">No messages yet. Be the first to leave one!</p>';
+            return;
+        }
+        
+        messages.forEach(msg => {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message-item';
+            messageElement.innerHTML = `
+                <img src="${msg.avatar}" class="message-avatar" alt="Avatar">
+                <div class="message-content">
+                    <div class="message-header">
+                        <div class="message-name">${msg.name}</div>
+                        <div class="message-time">${formatMessageTime(msg.timestamp)}</div>
+                    </div>
+                    <div class="message-text">${msg.message}</div>
+                </div>
+            `;
+            messagesContainer.appendChild(messageElement);
+        });
+    }
 
-closeModalBtn.addEventListener('click', function() {
-    threadModal.style.display = 'none';
-    document.body.style.overflow = 'auto';
-});
+    // Function to cycle through messages in the preview
+    let previewIndex = 0;
+    function cyclePreviewMessages() {
+        if (messages.length > 0) {
+            previewIndex = (previewIndex + 1) % messages.length;
+            const message = messages[previewIndex];
+            
+            // Create fade animation
+            previewContent.style.opacity = 0;
+            
+            setTimeout(() => {
+                previewContent.innerHTML = `
+                    <img src="${message.avatar}" class="preview-avatar" alt="Avatar">
+                    <div class="preview-name">${message.name}</div>
+                    <div class="preview-message">${message.message}</div>
+                    <div class="preview-time">${formatMessageTime(message.timestamp)}</div>
+                `;
+                
+                // Fade back in
+                previewContent.style.opacity = 1;
+            }, 500);
+        }
+    }
 
-// Close modal when clicking outside
-threadModal.addEventListener('click', function(e) {
-    if (e.target === threadModal) {
+    // Event listener for form submission
+    wallForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const nameInput = document.getElementById('user-name');
+        const messageInput = document.getElementById('user-message');
+        
+        const name = nameInput.value.trim();
+        const message = messageInput.value.trim();
+        
+        if (message) {
+            // Add message to Firebase
+            addMessageToFirebase(name, message)
+                .then(() => {
+                    // Clear form
+                    messageInput.value = '';
+                    nameInput.value = '';
+                    
+                    // Show success feedback
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.textContent;
+                    submitBtn.textContent = 'Posted!';
+                    submitBtn.style.backgroundColor = '#4CAF50';
+                    
+                    setTimeout(() => {
+                        submitBtn.textContent = originalText;
+                        submitBtn.style.backgroundColor = '';
+                    }, 2000);
+                })
+                .catch(error => {
+                    console.error("Error adding message: ", error);
+                    alert("Sorry, there was an error posting your message. Please try again.");
+                });
+        }
+    });
+
+    // Event listeners for modal
+    viewThreadBtn.addEventListener('click', function() {
+        updateThread();
+        threadModal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    });
+
+    closeModalBtn.addEventListener('click', function() {
         threadModal.style.display = 'none';
         document.body.style.overflow = 'auto';
-    }
-});
+    });
 
-// Initialize the preview and thread
-updatePreview();
-updateThread();
+    // Close modal when clicking outside
+    threadModal.addEventListener('click', function(e) {
+        if (e.target === threadModal) {
+            threadModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    });
 
-// Start cycling through messages every 5 seconds if there are messages
-if (messages.length > 0) {
-    setInterval(cyclePreviewMessages, 5000);
-}
+    // Real-time listener for messages
+    messagesRef
+        .orderBy('timestamp', 'desc')
+        .limit(20)
+        .onSnapshot((snapshot) => {
+            messages = [];
+            snapshot.forEach((doc) => {
+                messages.push({ id: doc.id, ...doc.data() });
+            });
+            
+            updatePreview();
+            updateThread();
+            
+            // If there are messages, start cycling through them
+            if (messages.length > 0) {
+                // Clear any existing interval
+                if (window.previewInterval) {
+                    clearInterval(window.previewInterval);
+                }
+                
+                // Start cycling through messages every 5 seconds
+                window.previewInterval = setInterval(cyclePreviewMessages, 5000);
+            }
+        }, (error) => {
+            console.error("Error getting messages: ", error);
+            statusElement.className = 'firebase-status status-disconnected';
+            statusText.textContent = 'Error connecting to Freedom Wall';
+        });
 
-
+    // Initialize the preview and thread
+    updatePreview();
+    updateThread();
     </script>
 </body>
 </html>
