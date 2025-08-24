@@ -946,6 +946,25 @@ function initShuffledPlaylist() {
             }
         });
         
+        audioElement.addEventListener('pause', function() {
+        if (isPlaying) {
+            // System paused our audio, update our state
+            isPlaying = false;
+            playBtn.innerHTML = '<i class="fas fa-play"></i>';
+            clearInterval(progressUpdateInterval);
+        }
+    });
+    
+    audioElement.addEventListener('play', function() {
+        if (!isPlaying) {
+            // System resumed our audio, update our state
+            isPlaying = true;
+            playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            progressUpdateInterval = setInterval(updateProgress, 100);
+            playCurrentTrack();
+        }
+    });
+        
         audioElement.addEventListener('ended', function() {
             nextTrack();
         });
