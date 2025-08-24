@@ -124,4 +124,14 @@ const playlist = [
         artist: "briancjb",
         src: "music/Bytes.mp3"
     },
+    {
+        title: "Multo",
+        artist: "Cup of Joe",
+        src: "music/multo.mp3"
+    },
+    {
+        title: "Calm Mind",
+        artist: "briancjb",
+        src: "music/Calm Mind.mp3"
+    },
 ];
