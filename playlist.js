@@ -2,17 +2,17 @@ const playlist = [
     {
         title: "Beyond Journey",
         artist: "briancjb",
-        src: "/myspace/music/Beyond Journey.mp3"
+        src: "/myspace/music/Beyond%20Journey.mp3"
     },
     {
         title: "No. 1 Party Anthem",
         artist: "Arctic Monkeys",
-        src: "/myspace/music/No. 1 Party Anthem.mp3"
+        src: "/myspace/music/No.%201%20Party%20Anthem.mp3"
     },
     {
         title: "I Wanna Be Yours",
         artist: "Arctic Monkeys",
-        src: "/myspace/music/I Wanna Be Yours.mp3"
+        src: "/myspace/music/I%20Wanna%20Be%20Yours.mp3"
     },
     {
         title: "Chibi",
@@ -32,7 +32,7 @@ const playlist = [
     {
         title: "Fever Dream",
         artist: "briancjb",
-        src: "/myspace/music/Fever Dream.mp3"
+        src: "/myspace/music/Fever%20Dream.mp3"
     },
     {
         title: "Frogs",
@@ -47,7 +47,7 @@ const playlist = [
     {
         title: "Go Fish",
         artist: "briancjb, RJ Pasin",
-        src: "/myspace/music/Go Fish.mp3"
+        src: "/myspace/music/Go%20Fish.mp3"
     },
     {
         title: "Jakarta",
@@ -62,7 +62,7 @@ const playlist = [
     {
         title: "Link Start",
         artist: "briancjb",
-        src: "/myspace/music/Link Start.mp3"
+        src: "/myspace/music/Link%20Start.mp3"
     },
     {
         title: "Macaroni",
@@ -87,7 +87,7 @@ const playlist = [
     {
         title: "Pixels Pt. 2",
         artist: "Zachz Winner, briancjb",
-        src: "/myspace/music/Pixels Pt. 2.mp3"
+        src: "/myspace/music/Pixels%20Pt.%202.mp3"
     },
     {
         title: "Shimmer",
@@ -97,7 +97,7 @@ const playlist = [
     {
         title: "Skill Issue",
         artist: "briancjb",
-        src: "/myspace/music/Skill Issue.mp3"
+        src: "/myspace/music/Skill%20Issue.mp3"
     },
     {
         title: "Stargazer",
@@ -132,6 +132,6 @@ const playlist = [
     {
         title: "Calm Mind",
         artist: "briancjb",
-        src: "/myspace/music/Calm Mind.mp3"
+        src: "/myspace/music/Calm%20Mind.mp3"
     }
 ];
