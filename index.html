@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="icon" href="https://i.imgur.com/MXzmuJT.jpeg">
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -733,7 +734,7 @@
             <h2 class="section-title" data-aos="fade-up">Simple Music Player</h2>
             <div class="media-container">
                 <div class="music-container" data-aos="fade-left">
-                    <h3>walang kwentang playlist</h3>
+                    <h3 id="playlistTitle" contenteditable="true" style="outline: none;">walang kwentang playlist HAHAHAHA</h3>
                     <div class="music-player">
                         <div class="track-info">
                             <div class="track-title">Song Title</div>
@@ -822,14 +823,16 @@
     const menuBtn = document.querySelector('.menu-btn');
     const navLinks = document.querySelector('.nav-links');
 
-    menuBtn.addEventListener('click', () => {
-        navLinks.classList.toggle('active');
-    });
+    if (menuBtn && navLinks) {
+        menuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    }
 
     // Close mobile menu when clicking on a link
     document.querySelectorAll('.nav-links a').forEach(link => {
         link.addEventListener('click', () => {
-            navLinks.classList.remove('active');
+            if (navLinks) navLinks.classList.remove('active');
         });
     });
 
@@ -862,27 +865,29 @@
         "The world's oldest known recipe is for beer. It dates back about 5,000 years and was found in Sumeria (modern-day Iraq)."
     ];
 
-    randomBtn.addEventListener('click', () => {
-        const randomCategory = Math.floor(Math.random() * 3);
-        
-        switch(randomCategory) {
-            case 0: // Joke
-                const jokeIndex = Math.floor(Math.random() * jokes.length);
-                randomContent.textContent = jokes[jokeIndex];
-                randomType.textContent = "Joke";
-                break;
-            case 1: // Quote
-                const quoteIndex = Math.floor(Math.random() * quotes.length);
-                randomContent.textContent = quotes[quoteIndex];
-                randomType.textContent = "Quote";
-                break;
-            case 2: // Fact
-                const factIndex = Math.floor(Math.random() * facts.length);
-                randomContent.textContent = facts[factIndex];
-                randomType.textContent = "Fun Fact";
-                break;
-        }
-    });
+    if (randomBtn && randomContent && randomType) {
+        randomBtn.addEventListener('click', () => {
+            const randomCategory = Math.floor(Math.random() * 3);
+            
+            switch(randomCategory) {
+                case 0: // Joke
+                    const jokeIndex = Math.floor(Math.random() * jokes.length);
+                    randomContent.textContent = jokes[jokeIndex];
+                    randomType.textContent = "Joke";
+                    break;
+                case 1: // Quote
+                    const quoteIndex = Math.floor(Math.random() * quotes.length);
+                    randomContent.textContent = quotes[quoteIndex];
+                    randomType.textContent = "Quote";
+                    break;
+                case 2: // Fact
+                    const factIndex = Math.floor(Math.random() * facts.length);
+                    randomContent.textContent = facts[factIndex];
+                    randomType.textContent = "Fun Fact";
+                    break;
+            }
+        });
+    }
 
     // Music Player - Custom Implementation
     const playBtn = document.getElementById('play');
@@ -914,7 +919,9 @@
     timeDisplay.appendChild(durationEl);
     
     // Insert time display after progress container
-    progressContainer.parentNode.insertBefore(timeDisplay, progressContainer.nextSibling);
+    if (progressContainer) {
+        progressContainer.parentNode.insertBefore(timeDisplay, progressContainer.nextSibling);
+    }
 
     // Music player state
     let currentTrack = 0;
@@ -932,31 +939,33 @@
     }
     
     function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
     }
-    return array;
-}
 
-// Initialize the shuffled indexes
-function initShuffledPlaylist() {
-    // Create an array of indexes [0, 1, 2, ...]
-    shuffledIndexes = Array.from({length: playlist.length}, (_, i) => i);
-    // Shuffle the indexes
-    shuffledIndexes = shuffleArray(shuffledIndexes);
-}
+    // Initialize the shuffled indexes
+    function initShuffledPlaylist() {
+        // Create an array of indexes [0, 1, 2, ...]
+        shuffledIndexes = Array.from({length: playlist.length}, (_, i) => i);
+        // Shuffle the indexes
+        shuffledIndexes = shuffleArray(shuffledIndexes);
+    }
 
     function loadTrack(index) {
-      // Get the actual track index from our shuffled mapping
-    const actualIndex = shuffledIndexes[index];
+        // Get the actual track index from our shuffled mapping
+        const actualIndex = shuffledIndexes[index];
         // Clear any existing interval
         clearInterval(progressUpdateInterval);
         
         // Remove existing audio element if any
         if (audioElement) {
             audioElement.pause();
-            audioElement.remove();
+            audioElement.removeEventListener('timeupdate', updateProgress);
+            audioElement.removeEventListener('ended', handleTrackEnd);
+            audioElement = null;
         }
         
         // Create new audio element
@@ -969,7 +978,6 @@ function initShuffledPlaylist() {
             if (!isNaN(audioElement.duration) && audioElement.duration !== Infinity) {
                 durationEl.textContent = formatTime(audioElement.duration);
             } else {
-                // If duration is not available, try to get it another way
                 setTimeout(() => {
                     if (!isNaN(audioElement.duration) && audioElement.duration !== Infinity) {
                         durationEl.textContent = formatTime(audioElement.duration);
@@ -978,27 +986,43 @@ function initShuffledPlaylist() {
             }
         });
         
+        // Handle system pauses but ignore natural endings
         audioElement.addEventListener('pause', function() {
-        if (isPlaying) {
-            // System paused our audio, update our state
-            isPlaying = false;
-            playBtn.innerHTML = '<i class="fas fa-play"></i>';
-            clearInterval(progressUpdateInterval);
-        }
-    });
-    
-    audioElement.addEventListener('play', function() {
-        if (!isPlaying) {
-            // System resumed our audio, update our state
-            isPlaying = true;
-            playBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            progressUpdateInterval = setInterval(updateProgress, 100);
-            playCurrentTrack();
-        }
-    });
+            // Check if the audio actually finished (currentTime very close to duration)
+            const isActuallyEnded = audioElement.currentTime >= audioElement.duration - 0.1;
+            
+            // Only update UI if this wasn't a natural track ending
+            if (isPlaying && !isActuallyEnded) {
+                isPlaying = false;
+                if (playBtn) playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                clearInterval(progressUpdateInterval);
+                
+                // Update media session state
+                if ('mediaSession' in navigator) {
+                    navigator.mediaSession.playbackState = 'paused';
+                }
+            }
+        });
         
+        audioElement.addEventListener('play', function() {
+            if (!isPlaying) {
+                isPlaying = true;
+                if (playBtn) playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                progressUpdateInterval = setInterval(updateProgress, 100);
+                
+                // Update media session state
+                if ('mediaSession' in navigator) {
+                    navigator.mediaSession.playbackState = 'playing';
+                }
+            }
+        });
+        
+        // Listen for time updates
+        audioElement.addEventListener('timeupdate', updateProgress);
+        
+        // Set flag when track ends naturally
         audioElement.addEventListener('ended', function() {
-            nextTrack();
+            handleTrackEnd();
         });
         
         audioElement.addEventListener('error', function(e) {
@@ -1006,17 +1030,84 @@ function initShuffledPlaylist() {
             durationEl.textContent = '0:00';
         });
         
-        trackTitle.textContent = playlist[actualIndex].title;
-        trackArtist.textContent = playlist[actualIndex].artist;
+        if (trackTitle) trackTitle.textContent = playlist[actualIndex].title;
+        if (trackArtist) trackArtist.textContent = playlist[actualIndex].artist;
         
         // Reset progress display
-        progress.style.width = '0%';
-        currentTimeEl.textContent = '0:00';
+        if (progress) progress.style.width = '0%';
+        if (currentTimeEl) currentTimeEl.textContent = '0:00';
+        
+        // Update media session metadata
+        if ('mediaSession' in navigator) {
+            updateMediaSessionMetadata();
+            navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
+        }
         
         // If we were playing, start the new track
         if (isPlaying) {
             playCurrentTrack();
         }
+    }
+    
+    function handleTrackEnd() {
+    console.log('Track ended naturally, moving to next track');
+    nextTrack();
+}
+
+    // Media Session API implementation
+    if ('mediaSession' in navigator) {
+        function updateMediaSessionMetadata() {
+            if (currentTrack >= shuffledIndexes.length || currentTrack < 0) {
+                console.warn('Invalid track index:', currentTrack);
+                return;
+            }
+            
+            const actualIndex = shuffledIndexes[currentTrack];
+            
+            // ADD ANOTHER SAFETY CHECK
+            if (actualIndex >= playlist.length || actualIndex < 0 || !playlist[actualIndex]) {
+                console.warn('Invalid playlist index:', actualIndex);
+                return;
+            }
+            const track = playlist[actualIndex];
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: track.title,
+                artist: track.artist
+            });
+        }
+        
+        
+        
+        navigator.mediaSession.setActionHandler('nexttrack', function() {
+            nextTrack();
+            updateMediaSessionMetadata();
+        });
+        
+        navigator.mediaSession.setActionHandler('previoustrack', function() {
+            prevTrack();
+            updateMediaSessionMetadata();
+        });
+        
+        
+        
+        // Update metadata when track changes
+        if (audioElement) {
+            audioElement.addEventListener('loadedmetadata', function() {
+                updateMediaSessionMetadata();
+            });
+            
+            // Update playback state
+            audioElement.addEventListener('play', function() {
+                navigator.mediaSession.playbackState = 'playing';
+            });
+            
+            audioElement.addEventListener('pause', function() {
+                navigator.mediaSession.playbackState = 'paused';
+            });
+        }
+        
+        // Initial setup
+        updateMediaSessionMetadata();
     }
 
     function updateProgress() {
@@ -1025,11 +1116,11 @@ function initShuffledPlaylist() {
             const duration = audioElement.duration;
             const progressPercent = (currentTime / duration) * 100;
             
-            progress.style.width = `${progressPercent}%`;
-            currentTimeEl.textContent = formatTime(currentTime);
+            if (progress) progress.style.width = `${progressPercent}%`;
+            if (currentTimeEl) currentTimeEl.textContent = formatTime(currentTime);
             
             // Update duration if not set yet
-            if (durationEl.textContent === '0:00' && !isNaN(duration)) {
+            if (durationEl && durationEl.textContent === '0:00' && !isNaN(duration)) {
                 durationEl.textContent = formatTime(duration);
             }
         }
@@ -1043,14 +1134,14 @@ function initShuffledPlaylist() {
         
         audioElement.play().then(() => {
             isPlaying = true;
-            playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            if (playBtn) playBtn.innerHTML = '<i class="fas fa-pause"></i>';
             
             // Update progress regularly
             progressUpdateInterval = setInterval(updateProgress, 100);
         }).catch(error => {
             console.error("Playback failed:", error);
             isPlaying = false;
-            playBtn.innerHTML = '<i class="fas fa-play"></i>';
+            if (playBtn) playBtn.innerHTML = '<i class="fas fa-play"></i>';
         });
     }
 
@@ -1058,7 +1149,7 @@ function initShuffledPlaylist() {
         if (audioElement) {
             audioElement.pause();
             isPlaying = false;
-            playBtn.innerHTML = '<i class="fas fa-play"></i>';
+            if (playBtn) playBtn.innerHTML = '<i class="fas fa-play"></i>';
             clearInterval(progressUpdateInterval);
         }
     }
@@ -1085,7 +1176,6 @@ function initShuffledPlaylist() {
             }
         } else {
             // Otherwise go to the previous track
-            //pauseCurrentTrack();
             currentTrack = (currentTrack - 1 + playlist.length) % playlist.length;
             loadTrack(currentTrack);
             playCurrentTrack();
@@ -1093,18 +1183,27 @@ function initShuffledPlaylist() {
     }
     
     // Initialize the shuffled playlist when the page loads
-initShuffledPlaylist();
-// Load the first track (which will be random due to shuffled indexes)
-loadTrack(currentTrack);
+    initShuffledPlaylist();
+    // Load the first track (which will be random due to shuffled indexes)
+    loadTrack(currentTrack);
 
     function seekToPosition(percent) {
+      console.log("seekToPosition called with:", percent);
         if (!audioElement || isNaN(audioElement.duration) || audioElement.duration <= 0) return;
+        
+        const wasPlaying = isPlaying;
+        
+        if (wasPlaying) {
+          audioElement.pause();
+        }
         
         // Calculate the new position in seconds
         const newTime = percent * audioElement.duration;
         
         // Don't allow seeking beyond the track duration
         const clampedTime = Math.max(0, Math.min(newTime, audioElement.duration));
+        
+        console.log("Setting audio time to:", clampedTime, "seconds");
         
         // Set the seeking flag to prevent updateProgress from interfering
         isSeeking = true;
@@ -1114,68 +1213,79 @@ loadTrack(currentTrack);
         
         // Update progress display immediately
         const progressPercent = (clampedTime / audioElement.duration) * 100;
-        progress.style.width = `${progressPercent}%`;
-        currentTimeEl.textContent = formatTime(clampedTime);
+        if (progress) progress.style.width = `${progressPercent}%`;
+        if (currentTimeEl) currentTimeEl.textContent = formatTime(clampedTime);
+        
+          // If audio was playing, resume playback after a brief delay
+    if (wasPlaying) {
+        setTimeout(() => {
+            audioElement.play().catch(error => {
+                console.error("Playback failed after seek:", error);
+            });
+        }, 50);
+    }
         
         // Clear the seeking flag after a short delay
         setTimeout(() => {
             isSeeking = false;
+            console.log("Audio currentTime after setting:", audioElement.currentTime);
         }, 100);
     }
 
     function handleSeekEvent(clientX) {
+        console.log("Seek Event Triggered");
+        if (!progressContainer) return;
+        
         const rect = progressContainer.getBoundingClientRect();
         const clickX = clientX - rect.left;
         const width = rect.width;
         const percent = Math.max(0, Math.min(1, clickX / width));
         
-        // Store whether we were playing before seeking
-        const wasPlaying = isPlaying;
+        console.log("Seeking to:", percent, "percent");
         
-        // Pause if currently playing
-        if (isPlaying) {
-            pauseCurrentTrack();
-        }
+        
         
         // Seek to the new position
         seekToPosition(percent);
         
-        // Resume playback if it was playing before
-        if (wasPlaying) {
-            playCurrentTrack();
-        }
+        
     }
 
     // Add event listeners
-    playBtn.addEventListener('click', togglePlayback);
-    nextBtn.addEventListener('click', nextTrack);
-    prevBtn.addEventListener('click', prevTrack);
+    if (playBtn) {
+        playBtn.addEventListener('click', togglePlayback);
+    }
+    
+    if (nextBtn) {
+        nextBtn.addEventListener('click', nextTrack);
+    }
+    
+    if (prevBtn) {
+        prevBtn.addEventListener('click', prevTrack);
+    }
     
     // Desktop click event
-    progressContainer.addEventListener('click', (e) => {
-        handleSeekEvent(e.clientX);
-    });
+    if (progressContainer) {
+        
 
-    // Mobile touch events
-    let touchStartX = 0;
-    
-    progressContainer.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        touchStartX = e.touches[0].clientX;
-        handleSeekEvent(touchStartX);
-    });
+        // Mobile touch events
+        let touchStartX = 0;
+        
+        progressContainer.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            touchStartX = e.touches[0].clientX;
+            handleSeekEvent(touchStartX);
+        });
 
-    progressContainer.addEventListener('touchmove', (e) => {
-        e.preventDefault();
-        handleSeekEvent(e.touches[0].clientX);
-    });
+        progressContainer.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            handleSeekEvent(e.touches[0].clientX);
+        });
 
-    progressContainer.addEventListener('touchend', (e) => {
-        e.preventDefault();
-    });
-
-    // Load the first track
-    loadTrack(currentTrack);
+        progressContainer.addEventListener('touchend', (e) => {
+            e.preventDefault();
+        });
+    }
 
     // Firebase Configuration and Freedom Wall Implementation
     const firebaseConfig = {
@@ -1202,12 +1312,16 @@ loadTrack(currentTrack);
     // Listen for connection state changes
     db.enableNetwork()
     .then(() => {
-        statusElement.className = 'firebase-status status-connected';
-        statusText.textContent = 'Connected';
+        if (statusElement && statusText) {
+            statusElement.className = 'firebase-status status-connected';
+            statusText.textContent = 'Connected';
+        }
     })
     .catch((err) => {
-        statusElement.className = 'firebase-status status-disconnected';
-        statusText.textContent = 'Offline - Using local messages';
+        if (statusElement && statusText) {
+            statusElement.className = 'firebase-status status-disconnected';
+            statusText.textContent = 'Offline - Using local messages';
+        }
         console.log('Error enabling network:', err);
     });
 
@@ -1244,7 +1358,7 @@ loadTrack(currentTrack);
 
     // Function to update the preview with the latest message
     function updatePreview() {
-        if (messages.length > 0) {
+        if (previewContent && messages.length > 0) {
             const latestMessage = messages[0];
             
             // Create fade animation by changing opacity
@@ -1261,7 +1375,7 @@ loadTrack(currentTrack);
                 // Fade back in
                 previewContent.style.opacity = 1;
             }, 500);
-        } else {
+        } else if (previewContent) {
             // Show default message if no messages
             previewContent.innerHTML = `
                 <img src="https://api.dicebear.com/9.x/bottts/svg?seed=Welcome" class="preview-avatar" alt="Avatar">
@@ -1296,6 +1410,8 @@ loadTrack(currentTrack);
 
     // Function to update the thread view
     function updateThread() {
+        if (!messagesContainer) return;
+        
         messagesContainer.innerHTML = '';
         
         if (messages.length === 0) {
@@ -1323,7 +1439,7 @@ loadTrack(currentTrack);
     // Function to cycle through messages in the preview
     let previewIndex = 0;
     function cyclePreviewMessages() {
-        if (messages.length > 0) {
+        if (previewContent && messages.length > 0) {
             previewIndex = (previewIndex + 1) % messages.length;
             const message = messages[previewIndex];
             
@@ -1345,93 +1461,162 @@ loadTrack(currentTrack);
     }
 
     // Event listener for form submission
-    wallForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const nameInput = document.getElementById('user-name');
-        const messageInput = document.getElementById('user-message');
-        
-        const name = nameInput.value.trim();
-        const message = messageInput.value.trim();
-        
-        if (message) {
-            // Add message to Firebase
-            addMessageToFirebase(name, message)
-                .then(() => {
-                    // Clear form
-                    messageInput.value = '';
-                    nameInput.value = '';
-                    
-                    // Show success feedback
-                    const submitBtn = this.querySelector('button[type="submit"]');
-                    const originalText = submitBtn.textContent;
-                    submitBtn.textContent = 'Posted!';
-                    submitBtn.style.backgroundColor = '#4CAF50';
-                    
-                    setTimeout(() => {
-                        submitBtn.textContent = originalText;
-                        submitBtn.style.backgroundColor = '';
-                    }, 2000);
-                })
-                .catch(error => {
-                    console.error("Error adding message: ", error);
-                    alert("Sorry, there was an error posting your message. Please try again.");
-                });
-        }
-    });
+    if (wallForm) {
+        wallForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const nameInput = document.getElementById('user-name');
+            const messageInput = document.getElementById('user-message');
+            
+            const name = nameInput ? nameInput.value.trim() : '';
+            const message = messageInput ? messageInput.value.trim() : '';
+            
+            if (message) {
+                // Add message to Firebase
+                addMessageToFirebase(name, message)
+                    .then(() => {
+                        // Clear form
+                        if (messageInput) messageInput.value = '';
+                        if (nameInput) nameInput.value = '';
+                        
+                        // Show success feedback
+                        const submitBtn = this.querySelector('button[type="submit"]');
+                        if (submitBtn) {
+                            const originalText = submitBtn.textContent;
+                            submitBtn.textContent = 'Posted!';
+                            submitBtn.style.backgroundColor = '#4CAF50';
+                            
+                            setTimeout(() => {
+                                submitBtn.textContent = originalText;
+                                submitBtn.style.backgroundColor = '';
+                            }, 2000);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error adding message: ", error);
+                        alert("Sorry, there was an error posting your message. Please try again.");
+                    });
+            }
+        });
+    }
 
     // Event listeners for modal
-    viewThreadBtn.addEventListener('click', function() {
-        updateThread();
-        threadModal.style.display = 'block';
-        document.body.style.overflow = 'hidden';
-    });
+    if (viewThreadBtn) {
+        viewThreadBtn.addEventListener('click', function() {
+            updateThread();
+            if (threadModal) {
+                threadModal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+        });
+    }
 
-    closeModalBtn.addEventListener('click', function() {
-        threadModal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    });
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', function() {
+            if (threadModal) {
+                threadModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        });
+    }
 
     // Close modal when clicking outside
-    threadModal.addEventListener('click', function(e) {
-        if (e.target === threadModal) {
-            threadModal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-    });
+    if (threadModal) {
+        threadModal.addEventListener('click', function(e) {
+            if (e.target === threadModal) {
+                threadModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        });
+    }
 
     // Real-time listener for messages
-    messagesRef
-        .orderBy('timestamp', 'desc')
-        .limit(20)
-        .onSnapshot((snapshot) => {
-            messages = [];
-            snapshot.forEach((doc) => {
-                messages.push({ id: doc.id, ...doc.data() });
-            });
-            
-            updatePreview();
-            updateThread();
-            
-            // If there are messages, start cycling through them
-            if (messages.length > 0) {
-                // Clear any existing interval
-                if (window.previewInterval) {
-                    clearInterval(window.previewInterval);
-                }
+    if (messagesRef) {
+        messagesRef
+            .orderBy('timestamp', 'desc')
+            .limit(20)
+            .onSnapshot((snapshot) => {
+                messages = [];
+                snapshot.forEach((doc) => {
+                    messages.push({ id: doc.id, ...doc.data() });
+                });
                 
-                // Start cycling through messages every 5 seconds
-                window.previewInterval = setInterval(cyclePreviewMessages, 5000);
-            }
-        }, (error) => {
-            console.error("Error getting messages: ", error);
-            statusElement.className = 'firebase-status status-disconnected';
-            statusText.textContent = 'Error connecting to Freedom Wall';
-        });
+                updatePreview();
+                updateThread();
+                
+                // If there are messages, start cycling through them
+                if (messages.length > 0) {
+                    // Clear any existing interval
+                    if (window.previewInterval) {
+                        clearInterval(window.previewInterval);
+                    }
+                    
+                    // Start cycling through messages every 5 seconds
+                    window.previewInterval = setInterval(cyclePreviewMessages, 5000);
+                }
+            }, (error) => {
+                console.error("Error getting messages: ", error);
+                if (statusElement && statusText) {
+                    statusElement.className = 'firebase-status status-disconnected';
+                    statusText.textContent = 'Error connecting to Freedom Wall';
+                }
+            });
+    }
 
     // Initialize the preview and thread
     updatePreview();
     updateThread();
+    
+    const playlistTitleRef = db.collection('siteData').doc('playlistTitle');
+
+// Function to update the playlist title in Firebase
+function updatePlaylistTitleInFirebase(newTitle) {
+  return playlistTitleRef.set({
+    title: newTitle,
+    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
+
+// Real-time listener for playlist title changes
+function setupPlaylistTitleListener() {
+  playlistTitleRef.onSnapshot((doc) => {
+    if (doc.exists) {
+      const data = doc.data();
+      if (data && data.title) {
+        // Update the title in the UI
+        const playlistTitleElement = document.getElementById("playlistTitle");
+        if (playlistTitleElement && playlistTitleElement.textContent !== data.title) {
+          playlistTitleElement.textContent = data.title;
+          
+        }
+      }
+    }
+  }, (error) => {
+    console.error("Playlist title listener error:", error);
+  });
+}
+
+// Initialize the playlist title
+playlistTitleRef.get().then((doc) => {
+    if (doc.exists && doc.data().title) {
+        playlistTitle.textContent = doc.data().title;
+    } 
+}).catch((error) => {
+    console.error("Error getting playlist title:", error);
+});
+
+const playlistTitle = document.getElementById("playlistTitle");
+
+// Set up the real-time listener for playlist title
+setupPlaylistTitleListener();
+
+// Save changes to Firebase when user edits
+playlistTitle.addEventListener('input', function() {
+    updatePlaylistTitleInFirebase(this.textContent)
+        .catch(error => {
+            console.error("Error updating playlist title:", error);
+        });
+});
     </script>
 </body>
 </html>
