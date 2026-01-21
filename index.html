@@ -2,1621 +2,1868 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Johnryll Garciano</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="icon" href="https://graph.facebook.com/100080108864058/picture?width=150&height=150&access_token=350685531728|62f8ce9f74b12f84c123cc23437a4a32&width=1000&height=1000">
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <title id="pageTitle">Loading...</title>
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" as="image" id="preloadProfileImage">
+    <link rel="preload" as="audio" id="preloadMusic">
+    
+    <!-- Meta tags will be injected by JavaScript -->
+    <link rel="icon" id="favicon" type="image/jpeg">
+    <link rel="shortcut icon" id="shortcutIcon" type="image/jpeg">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" id="ogTitle" content="" />
+    <meta property="og:description" id="ogDescription" content="" />
+    <meta property="og:image" id="ogImage" content="" />
+    <meta property="og:type" id="ogType" content="" />
+    <meta property="og:url" id="ogUrl" content="" />
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" id="twitterCard" content="" />
+    <meta name="twitter:title" id="twitterTitle" content="" />
+    <meta name="twitter:description" id="twitterDescription" content="" />
+    <meta name="twitter:image" id="twitterImage" content="" />
+    
+    <!-- Additional Meta Tags -->
+    <meta name="description" id="metaDescription" content="" />
+    <meta name="author" id="metaAuthor" content="" />
+    
+    <!-- Google Fonts for Cyberpunk theme -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+    
     <style>
-        :root {
-            --primary: #252525;
-            --accent: #8a2be2;
-            --light: #f5f5f5;
-            --dark: #1a1a1a;
-            --text: #e0e0e0;
-            --card-bg: #2d2d2d;
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            /* Default theme - Light */
+            --bg-color: #ffffff;
+            --text-primary: #2c3e50;
+            --text-secondary: #95a5a6;
+            --accent-color: #ff1744;
+            --accent-glow: rgba(255, 23, 68, 0.3);
+            --border-color: rgba(0, 0, 0, 0.08);
+            --menu-hover-bg: rgba(255, 23, 68, 0.04);
+            --stats-bg: transparent;
+            --transition-speed: 0.6s;
+            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+            --theme-icon-filter: invert(0);
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--primary);
-            color: var(--text);
-            line-height: 1.6;
+            font-family: var(--font-family);
+            background: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: clamp(40px, 8vh, 60px) 20px 20px;
+            transition: background var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1),
+                        color var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
             overflow-x: hidden;
-        }
-        
-        html {
-          overflow-x: hidden;
+            position: relative;
         }
 
-        .container {
-            width: 100%;
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Header & Navigation */
-        header {
-            background-color: rgba(37, 37, 37, 0.9);
+        /* Theme switching overlay */
+        .theme-overlay {
             position: fixed;
-            width: 100%;
-            z-index: 1000;
-            padding: 15px 0;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        nav {
-            display: flex;
-            justify-content: justify;
-            align-items: center;
-            width: 100vw;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--accent);
-        }
-
-        .nav-links {
-            display: flex;
-            list-style: none;
-        }
-
-        .nav-links li {
-            margin-left: 20px;
-        }
-
-        .nav-links a {
-            color: var(--text);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: .9rem;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: var(--accent);
-        }
-
-        .menu-btn {
-            display: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            position: relative;
-            right: -13rem;
-        }
-
-        /* Hero Section */
-        .hero {
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-bg {
-            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('https://images.unsplash.com/photo-1633356122544-f134324a6cee?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80') no-repeat center center/cover;
-            opacity: 0.3;
-            z-index: -1;
-        }
-
-        .hero-content {
-            max-width: 600px;
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-            background: linear-gradient(45deg, var(--accent), #ff00ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .hero p {
-            font-size: 1.2rem;
-            margin-bottom: 30px;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 12px 30px;
-            background-color: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 30px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-        }
-
-        .btn:hover {
-            background-color: #6a1cb9;
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(138, 43, 226, 0.3);
-        }
-
-        /* Sections */
-        section {
-            padding: 80px 0;
-        }
-
-        .section-title {
-            text-align: center;
-            margin-bottom: 60px;
-            font-size: 2.5rem;
-            position: relative;
-        }
-
-        /* About Section */
-        .about-content {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 40px;
-            align-items: center;
-        }
-
-        .about-text {
-            flex: 1;
-            min-width: 300px;
-        }
-
-        .about-image {
-            flex: 1;
-            min-width: 300px;
-            text-align: center;
-        }
-
-        .about-image img {
-            width: 250px;
-            height: 250px;
-            border-radius: 50%;
-            object-fit: cover;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            border: 4px solid var(--accent);
-            padding: 4px;
-            box-sizing: border-box;
-        }
-
-        /* Interests Section */
-        .interests-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-        }
-
-        .interest-card {
-            background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: 15px;
-            text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .interest-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .interest-icon {
-            font-size: 2.5rem;
-            color: var(--accent);
-            margin-bottom: 20px;
-        }
-
-        /* Random Section */
-        .random-container {
-            background-color: var(--card-bg);
-            padding: 40px;
-            border-radius: 15px;
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .random-content {
-            font-size: 1.5rem;
-            margin-bottom: 30px;
-            min-height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .random-type {
-            color: var(--accent);
-            font-weight: 600;
-            margin-top: 10px;
-        }
-
-        /* Media Section */
-        .media-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
-        }
-
-        .video-container, .music-container {
-            flex: 1;
-            min-width: 300px;
-            background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: 15px;
-        }
-
-        .video-player {
-            width: 100%;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-
-        /* Music Player */
-        .music-player {
-            margin-top: 20px;
-        }
-
-        .track-info {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .track-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-
-        .track-artist {
-            color: #aaa;
-        }
-
-        .progress-container {
-            background-color: #444;
-            height: 5px;
-            border-radius: 5px;
-            margin-bottom: 20px;
+            background: var(--bg-color);
+            opacity: 0;
             pointer-events: none;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
         }
 
-        .progress {
-            background-color: var(--accent);
-            height: 100%;
-            border-radius: 5px;
-            width: 0%;
+        body.theme-switching .theme-overlay {
+            opacity: 1;
         }
 
-        .controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .controls button {
-            background: none;
-            border: none;
-            color: var(--text);
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-
-        .play-btn {
-            font-size: 2rem !important;
-        }
-
-        /* Freedom Wall Section */
-        .freedom-wall {
-            padding: 80px 0;
-            background-color: var(--dark);
-        }
-
-        .wall-container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .message-form {
-            background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: 15px;
-            margin-bottom: 40px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px 15px;
-            background-color: #3a3a3a;
-            border: 1px solid #555;
-            border-radius: 8px;
-            color: var(--text);
-            font-family: 'Poppins', sans-serif;
-            outline: none;
-        }
-
-        .form-group textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        .message-preview {
-            background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: 15px;
-            margin-bottom: 40px;
-            min-height: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .preview-content {
-            text-align: center;
-            width: 100%;
-            overflow-wrap: break-word;
-            transition: opacity 0.5s ease;
-        }
-
-        .preview-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 15px;
-        }
-
-        .preview-name {
-            font-weight: 600;
-            color: var(--accent);
-            margin-bottom: 10px;
-        }
-
-        .preview-message {
-            font-style: italic;
-            margin-bottom: 15px;
-            line-height: 1.5;
-        }
-
-        .preview-time {
-            font-size: 0.8rem;
-            color: #aaa;
-        }
-
-        .view-all-btn {
-            display: block;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        /* Thread Modal */
-        .thread-modal {
-            display: none;
+        /* Menu Button */
+        .menu-button {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 2000;
-            overflow-x: hidden;
-            overflow-wrap: break-word;
+            top: 25px;
+            right: 25px;
+            background: var(--bg-color);
+            border: 1.5px solid var(--border-color);
+            width: 50px;
+            height: 50px;
+            border-radius: 16px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            z-index: 101;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: fadeInRotate 0.8s ease 0.4s both;
+            will-change: transform;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        @keyframes fadeInRotate {
+            from {
+                opacity: 0;
+                transform: rotate(-180deg) scale(0);
+            }
+            to {
+                opacity: 1;
+                transform: rotate(0deg) scale(1);
+            }
+        }
+
+        .menu-button:hover {
+            transform: scale(1.08);
+            border-color: var(--accent-color);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15), 0 0 0 1px var(--accent-glow);
+        }
+
+        .menu-line {
+            width: 20px;
+            height: 2px;
+            background: var(--text-primary);
+            border-radius: 2px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .menu-button:hover .menu-line {
+            background: var(--accent-color);
+        }
+
+        .menu-button.active .menu-line:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+
+        .menu-button.active .menu-line:nth-child(2) {
+            opacity: 0;
+            transform: scaleX(0);
+        }
+
+        .menu-button.active .menu-line:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        /* Menu Panel */
+        .menu-panel {
+            position: fixed;
+            top: 85px;
+            right: 25px;
+            width: 260px;
+            background: var(--bg-color);
+            border: 1.5px solid var(--border-color);
+            border-radius: 16px;
+            padding: 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px) scale(0.95);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            backdrop-filter: blur(20px);
+            max-height: 80vh;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-color) transparent;
+        }
+
+        .menu-panel::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .menu-panel::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .menu-panel::-webkit-scrollbar-thumb {
+            background-color: var(--border-color);
+            border-radius: 2px;
+        }
+
+        .menu-panel.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+        }
+
+        .menu-section {
             padding: 20px;
         }
 
-        .modal-content {
-            background-color: var(--card-bg);
-            max-width: 100vw;
-            margin: 40px auto;
-            border-radius: 15px;
-            padding: 30px;
-            position: relative;
-            overflow-x: hidden;
+        .menu-section + .menu-section {
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
         }
 
-        .close-modal {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 1.5rem;
-            color: var(--text);
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
-
-        .thread-title {
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .messages-container {
-            max-height: 60vh;
-            overflow-x: hidden;
-            padding-right: 10px;
-        }
-
-        .message-item {
-            display: flex;
-            margin-bottom: 25px;
-            padding: 15px;
-            background-color: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-        }
-
-        .message-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 15px;
-            flex-shrink: 0;
-        }
-
-        .message-content {
-            flex-grow: 1;
-        }
-
-        .message-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-
-        .message-name {
-            font-weight: 600;
-            width: 170px;
-            color: var(--accent);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .message-time {
-            font-size: 0.8rem;
-            color: #aaa;
-        }
-
-        .message-text {
-            line-height: 1.5;
-        }
-
-        /* Footer */
-        footer {
-            background-color: var(--dark);
-            padding: 40px 0;
-            text-align: center;
-        }
-
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .social-links a {
-            color: var(--text);
-            font-size: 1.5rem;
-            transition: color 0.3s;
-        }
-
-        .social-links a:hover {
-            color: var(--accent);
-        }
-
-        /* Responsive Styles */
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-                position: absolute;
-                top: 70px;
-                left: 0;
-                width: 100%;
-                background-color: var(--primary);
-                flex-direction: column;
-                padding: 20px;
-            }
-            
-            .nav-links.active {
-                display: flex;
-            }
-            
-            .nav-links li {
-                margin: 10px 0;
-            }
-            
-            .menu-btn {
-                display: block;
-            }
-            
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            
-            .about-content {
-                flex-direction: column;
-            }
-            
-            .media-container {
-                flex-direction: column;
-            }
-        }
-
-        /* Firebase Connection Status */
-        .firebase-status {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            z-index: 1000;
+        .menu-section-title {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
-        
-        .status-connected {
-            background-color: #4CAF50;
-            color: white;
+
+        .menu-section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-color);
+            margin-left: 8px;
         }
-        
-        .status-disconnected {
-            background-color: #f44336;
-            color: white;
+
+        .menu-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
-        
-        .status-dot {
-            width: 8px;
-            height: 8px;
+
+        .menu-item {
+            padding: 16px 18px;
+            text-align: left;
+            border-radius: 12px;
+            background: var(--bg-color);
+            border: 1.5px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: block;
+            color: inherit;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        .menu-panel.active .menu-item {
+            animation: slideInMenuItem 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .menu-panel.active .menu-item:nth-child(1) { animation-delay: 0.05s; }
+        .menu-panel.active .menu-item:nth-child(2) { animation-delay: 0.1s; }
+        .menu-panel.active .menu-item:nth-child(3) { animation-delay: 0.15s; }
+
+        @keyframes slideInMenuItem {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .menu-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-color);
+            transform: scaleY(0);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 12px 0 0 12px;
+        }
+
+        .menu-item:hover {
+            background: var(--menu-hover-bg);
+            transform: translateX(4px);
+            border-color: var(--accent-color);
+        }
+
+        .menu-item:hover::before {
+            transform: scaleY(1);
+        }
+
+        .menu-item-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .menu-item:hover .menu-item-title {
+            color: var(--accent-color);
+        }
+
+        .menu-item-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 400;
+            line-height: 1.4;
+            letter-spacing: 0.2px;
+            padding-left: 26px;
+        }
+
+        /* Theme Options in Menu - COMPACT VERSION */
+        .theme-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 12px;
+            justify-content: center;
+        }
+
+        .theme-option {
+            width: 44px;
+            height: 44px;
+            padding: 8px;
+            border-radius: 12px;
+            background: var(--bg-color);
+            border: 1.5px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: scale(0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-panel.active .theme-option {
+            animation: popInThemeOption 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .menu-panel.active .theme-option:nth-child(1) { animation-delay: 0.2s; }
+        .menu-panel.active .theme-option:nth-child(2) { animation-delay: 0.25s; }
+        .menu-panel.active .theme-option:nth-child(3) { animation-delay: 0.3s; }
+        .menu-panel.active .theme-option:nth-child(4) { animation-delay: 0.35s; }
+        .menu-panel.active .theme-option:nth-child(5) { animation-delay: 0.4s; }
+        .menu-panel.active .theme-option:nth-child(6) { animation-delay: 0.45s; }
+        .menu-panel.active .theme-option:nth-child(7) { animation-delay: 0.5s; }
+
+        @keyframes popInThemeOption {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .theme-option:hover {
+            transform: scale(1.1);
+            border-color: var(--accent-color);
+            box-shadow: 0 4px 12px var(--accent-glow);
+            z-index: 2;
+        }
+
+        .theme-option.active {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+            transform: scale(1.05);
+            box-shadow: 0 0 0 2px var(--accent-glow);
+        }
+
+        .theme-option.active svg {
+            fill: white;
+        }
+
+        .theme-option svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--text-primary);
+            transition: fill 0.3s ease, transform 0.3s ease;
+        }
+
+        .theme-option:hover svg {
+            transform: rotate(15deg);
+        }
+
+        .theme-option.active:hover svg {
+            transform: rotate(15deg) scale(1.1);
+        }
+
+        .theme-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-8px);
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .theme-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: var(--bg-color);
+        }
+
+        .theme-option:hover .theme-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-12px);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 500px;
+            width: 100%;
+            animation: slideInFromLeft 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes slideInFromLeft {
+            from {
+                opacity: 0;
+                transform: translateX(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        /* Profile Section */
+        .profile-section {
+            text-align: center;
+            padding: 0 20px;
+            margin-bottom: 30px;
+        }
+
+        .profile-image-wrapper {
+            position: relative;
+            width: 130px;
+            height: 130px;
+            margin: 0 auto 32px;
+            animation: zoomBounce 1s ease 0.3s both, float 4s ease-in-out 1.3s infinite;
+            will-change: transform;
+        }
+
+        @keyframes zoomBounce {
+            0% {
+                opacity: 0;
+                transform: scale(0) rotate(180deg);
+            }
+            60% {
+                transform: scale(1.15) rotate(-10deg);
+            }
+            80% {
+                transform: scale(0.95) rotate(5deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-8px) rotate(1deg); }
+            75% { transform: translateY(-4px) rotate(-1deg); }
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
+            object-fit: cover;
+            position: relative;
+            z-index: 2;
+            border: 5px solid var(--bg-color);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            transition: border-color var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glow-ring {
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-color), #ff5252, var(--accent-color));
+            padding: 4px;
+            animation: pulseGlow 3s ease-in-out infinite, colorShift 8s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.85;
+                filter: blur(0px);
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 1;
+                filter: blur(1px);
+            }
+        }
+
+        @keyframes colorShift {
+            0%, 100% { background: linear-gradient(135deg, var(--accent-color), #ff5252, var(--accent-color)); }
+            14% { background: linear-gradient(135deg, #f50057, #ff4081, var(--accent-color)); }
+            28% { background: linear-gradient(135deg, #e91e63, var(--accent-color), #ff5252); }
+            42% { background: linear-gradient(135deg, #ff4081, #f50057, #e91e63); }
+            57% { background: linear-gradient(135deg, #667eea, #764ba2, #f093fb); }
+            71% { background: linear-gradient(135deg, #4facfe, #00f2fe, #43e97b); }
+            85% { background: linear-gradient(135deg, #43e97b, #38f9d7, #667eea); }
+        }
+
+        .profile-name {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+            animation: slideInRight 0.8s ease 0.5s both;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .verified-badge {
+            width: 22px;
+            height: 22px;
+            background: #1877f2;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            animation: badgePop 0.6s ease 0.8s both, badgeSpin 6s linear 1.4s infinite;
+            box-shadow: 0 4px 15px rgba(24, 119, 242, 0.3);
+            will-change: transform;
+        }
+
+        @keyframes badgePop {
+            0% {
+                opacity: 0;
+                transform: scale(0) rotate(180deg);
+            }
+            60% {
+                transform: scale(1.3) rotate(-10deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        @keyframes badgeSpin {
+            0% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(90deg) scale(1.1); }
+            50% { transform: rotate(180deg) scale(1); }
+            75% { transform: rotate(270deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        .verified-badge svg {
+            width: 12px;
+            height: 12px;
+            fill: white;        }
+
+        .profile-subtitle {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 3px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: fadeInUp 0.7s ease 0.6s both;
+        }
+
+        .beta-label {
+            font-size: 9px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+            animation: fadeInUp 0.7s ease 0.65s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .profile-quote {
+            font-size: 10px;
+            margin-bottom: 40px;
+            font-weight: 500;
+            animation: fadeInUp 0.7s ease 0.7s both;
+            min-height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            letter-spacing: 0.4px;
+            position: relative;
+            padding: 0 10px;
+        }
+
+        .profile-quote.quote-glow {
+            text-shadow: 0 0 20px currentColor;
+            animation: quoteGlowPulse 2s ease-out forwards;
+        }
+
+        @keyframes quoteGlowPulse {
+            0% {
+                text-shadow: 0 0 20px currentColor;
+            }
+            50% {
+                text-shadow: 0 0 30px currentColor, 0 0 40px currentColor;
+            }
+            100% {
+                text-shadow: none;
+            }
+        }
+        
+        .typing-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 12px;
+            background-color: currentColor;
+            margin-left: 3px;
+            animation: blink 1s infinite;
+            vertical-align: middle;
+            opacity: 0.8;
+        }
+        
+        @keyframes blink {
+            0%, 49% { opacity: 0.8; }
+            50%, 100% { opacity: 0; }
+        }
+
+        /* Social Icons */
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 60px;
+            animation: fadeInUp 0.7s ease 0.8s both;
+        }
+
+        .social-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            background: var(--bg-color);
+            border: 1.5px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--text-primary);
+            text-decoration: none;
+            animation: breathe 3s ease-in-out 1.5s infinite;
+            will-change: transform;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .social-icon:nth-child(1) { animation-delay: 1.5s; }
+        .social-icon:nth-child(2) { animation-delay: 1.8s; }
+        .social-icon:nth-child(3) { animation-delay: 2.1s; }
+
+        @keyframes breathe {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-3px) scale(1.03); }
+        }
+
+        .social-icon:hover {
+            transform: translateY(-6px) scale(1.12) rotate(3deg);
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+            box-shadow: 0 12px 30px var(--accent-glow), 0 0 0 1px var(--accent-glow);
+        }
+
+        .social-icon:active {
+            transform: translateY(-3px) scale(1.08);
+            transition-duration: 0.1s;
+        }
+
+        .social-icon svg {
+            width: 22px;
+            height: 22px;
+            transition: transform 0.3s ease;
+        }
+
+        .social-icon:hover svg {
+            transform: rotate(-5deg);
+        }
+
+        /* Stats */
+        .stats {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 60px;
+            margin-bottom: 50px;
+            padding: 0 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+            animation: popIn 0.6s ease both;
+            transition: all 0.3s ease;
+            padding: 15px;
+            border-radius: 16px;
+            background: var(--stats-bg);
+            min-width: 100px;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-item:nth-child(1) { animation-delay: 0.9s; }
+        .stat-item:nth-child(2) { animation-delay: 1s; }
+        .stat-item:nth-child(3) { animation-delay: 1.1s; }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.5) translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.2px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Time & Battery */
+        .time-battery-section {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInUp 0.7s ease 1.2s both;
+            padding: 20px;
+        }
+
+        .ph-time-display {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            letter-spacing: 1.5px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            animation: timeGlow 3s ease-in-out infinite;
+            font-variant-numeric: tabular-nums;
+        }
+
+        @keyframes timeGlow {
+            0%, 100% { text-shadow: 0 2px 10px var(--accent-glow); }
+            50% { text-shadow: 0 2px 15px var(--accent-glow), 0 0 20px var(--accent-glow); }
+        }
+
+        .time-label {
+            font-size: 7px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .battery-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 24px;
+            background: var(--bg-color);
+            border: 1.5px solid var(--border-color);
+            border-radius: 24px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .battery-container:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 10px 30px var(--accent-glow);
+            border-color: var(--accent-color);
+        }
+
+        .battery-icon {
+            position: relative;
+            width: 32px;
+            height: 16px;
+            border: 2px solid var(--text-primary);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            padding: 2px;
+            transition: border-color 0.3s ease;
+        }
+
+        .battery-icon::after {
+            content: '';
+            position: absolute;
+            right: -5px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 8px;
+            background: var(--text-primary);
+            border-radius: 0 2px 2px 0;
+        }
+
+        .battery-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #43e97b, #38f9d7);
+            border-radius: 2px;
+            transition: width 0.5s ease, background 0.5s ease;
+            animation: batteryPulse 2s ease-in-out infinite;
+            box-shadow: 0 0 10px rgba(67, 233, 123, 0.6);
+        }
+
+        @keyframes batteryPulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(67, 233, 123, 0.6); }
+            50% { box-shadow: 0 0 20px rgba(67, 233, 123, 0.9); }
+        }
+
+        .battery-fill.low {
+            background: linear-gradient(90deg, #ff6b6b, #ff8787);
+            box-shadow: 0 0 10px rgba(255, 107, 107, 0.6);
+        }
+
+        .battery-fill.medium {
+            background: linear-gradient(90deg, #ffd93d, #ffed4e);
+            box-shadow: 0 0 10px rgba(255, 217, 61, 0.6);
+        }
+
+        .battery-percentage {
+            font-size: 10px;
+            font-weight: 800;
+            color: var(--text-primary);
+            min-width: 48px;
+            text-align: left;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 0 20px;
+            animation: slideInBottom 0.8s ease 1.3s both;
+        }
+
+        @keyframes slideInBottom {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .footer-text {
+            font-size: 13px;
+            font-weight: 700;
+            animation: colorCycle 4s ease-in-out 1.8s infinite;
+            padding: 8px 16px;
+            border-radius: 12px;
+            background: var(--bg-color);
+            border: 1.5px solid var(--border-color);
             display: inline-block;
         }
-        
-        .status-connected .status-dot {
-            background-color: white;
+
+        @keyframes colorCycle {
+            0% {
+                background: linear-gradient(135deg, var(--accent-color) 0%, #ff5252 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+            25% {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+            50% {
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+            75% {
+                background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+            100% {
+                background: linear-gradient(135deg, var(--accent-color) 0%, #ff5252 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
         }
-        
-        .status-disconnected .status-dot {
-            background-color: white;
+
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 16px;
+                padding-top: 80px;
+            }
+            
+            .menu-button {
+                top: 20px;
+                right: 20px;
+                width: 46px;
+                height: 46px;
+                border-radius: 14px;
+            }
+            
+            .menu-panel {
+                right: 20px;
+                top: 76px;
+                width: 240px;
+            }
+            
+            .container {
+                max-width: 100%;
+            }
+            
+            .profile-image-wrapper {
+                width: 120px;
+                height: 120px;
+                margin-bottom: 28px;
+            }
+            
+            .profile-name {
+                font-size: 28px;
+            }
+            
+            .verified-badge {
+                width: 20px;
+                height: 20px;
+            }
+            
+            .verified-badge svg {
+                width: 11px;
+                height: 11px;
+            }
+            
+            .stats {
+                gap: 30px;
+            }
+            
+            .stat-item {
+                min-width: 90px;
+                padding: 12px;
+            }
+            
+            .stat-value {
+                font-size: 18px;
+            }
+            
+            .social-icon {
+                width: 44px;
+                height: 44px;
+            }
+            
+            .social-icon svg {
+                width: 20px;
+                height: 20px;
+            }
+            
+            .theme-options {
+                gap: 5px;
+            }
+            
+            .theme-option {
+                width: 40px;
+                height: 40px;
+                padding: 6px;
+            }
+            
+            .theme-option svg {
+                width: 14px;
+                height: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .menu-button {
+                right: 16px;
+                width: 44px;
+                height: 44px;
+            }
+            
+            .menu-panel {
+                right: 16px;
+                width: 220px;
+            }
+            
+            .profile-image-wrapper {
+                width: 110px;
+                height: 110px;
+            }
+            
+            .profile-name {
+                font-size: 26px;
+            }
+            
+            .stats {
+                flex-direction: row;
+                gap: 20px;
+            }
+            
+            .stat-item {
+                min-width: 80px;
+                padding: 10px;
+            }
+            
+            .stat-value {
+                font-size: 16px;
+            }
+            
+            .stat-label {
+                font-size: 10px;
+            }
+            
+            .social-icons {
+                gap: 16px;
+                margin-bottom: 50px;
+            }
+            
+            .social-icon {
+                width: 42px;
+                height: 42px;
+            }
+            
+            .theme-options {
+                justify-content: flex-start;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .menu-button {
+                right: 14px;
+                width: 42px;
+                height: 42px;
+            }
+            
+            .menu-panel {
+                right: 14px;
+                width: 200px;
+            }
+            
+            .stats {
+                gap: 15px;
+            }
+            
+            .stat-item {
+                min-width: 70px;
+                padding: 8px;
+            }
+            
+            .theme-options {
+                gap: 4px;
+            }
+            
+            .theme-option {
+                width: 38px;
+                height: 38px;
+                padding: 5px;
+            }
+        }
+
+        /* Touch device optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .menu-button:hover,
+            .social-icon:hover,
+            .stat-item:hover,
+            .battery-container:hover,
+            .menu-item:hover,
+            .theme-option:hover {
+                transform: none;
+            }
+            
+            .menu-button:active,
+            .social-icon:active,
+            .stat-item:active,
+            .battery-container:active,
+            .theme-option:active {
+                transform: scale(0.95);
+                transition-duration: 0.1s;
+            }
+            
+            .menu-item:hover::before,
+            .menu-item:hover .menu-item-title {
+                transform: none;
+                color: inherit;
+            }
+            
+            .menu-item:active::before {
+                transform: scaleY(1);
+            }
+            
+            .menu-item:active .menu-item-title {
+                color: var(--accent-color);
+            }
+            
+            .theme-option:hover .theme-tooltip {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        /* Reduced motion preference */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            
+            body,
+            .container,
+            .profile-image-wrapper,
+            .profile-name,
+            .profile-subtitle,
+            .profile-quote,
+            .social-icons,
+            .stat-item,
+            .time-battery-section,
+            .footer {
+                animation: none !important;
+                transition: none !important;
+            }
+            
+            .glow-ring,
+            .verified-badge,
+            .battery-fill,
+            .footer-text {
+                animation: none !important;
+            }
+            
+            .menu-panel.active .menu-item,
+            .menu-panel.active .theme-option {
+                animation: none !important;
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        @font-face {
+          font-family: 'Press Start 2P';
+          src: url('https://raw.githubusercontent.com/google/fonts/main/ofl/pressstart2p/PressStart2P-Regular.ttf') format('truetype');
+          font-weight: normal;
+          font-style: normal;
         }
     </style>
 </head>
 <body>
-    <!-- Firebase Connection Status Indicator -->
-    <div id="firebase-status" class="firebase-status status-disconnected">
-        <span class="status-dot"></span>
-        <span id="status-text">Connecting...</span>
-    </div>
-
-    <!-- Header & Navigation -->
-    <header>
-        <div class="container">
-            <nav>
-                <div class="logo">MySpace</div>
-                <ul class="nav-links">
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#interests">Interests</a></li>
-                    <li><a href="#random">Random</a></li>
-                    <li><a href="#music">Music</a></li>
-                    <li><a href="#freedom-wall">Freedom Wall</a></li>
-                </ul>
-                <div class="menu-btn">
-                    <i class="fas fa-bars"></i>
-                </div>
-            </nav>
-        </div>
-    </header>
-
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-bg"></div>
-        <div class="container">
-            <div class="hero-content" data-aos="fade-right">
-                <h1>Hello, I'm Johnryll Garciano</h1>
-                <p>Welcome to my personal corner of the internet!</p>
-                <a href="#about" class="btn">Explore More</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section id="about">
-        <div class="container">
-            <h2 class="section-title" data-aos="fade-up">About Me</h2>
-            <div class="about-content">
-                <div class="about-image" data-aos="fade-left">
-                    <img src="https://graph.facebook.com/100080108864058/picture?width=150&height=150&access_token=350685531728|62f8ce9f74b12f84c123cc23437a4a32&width=1000&height=1000" alt="Profile Image">
-                </div>
-                <div class="about-text" data-aos="fade-right">
-                    <p>Hey there! I'm Johnryll Garciano, 15 years old, currently a Grade 11 STEM student at DNHS. I'm a passionate developer and creative thinker with a love for technology and design. I enjoy creating things that live on the internet, whether that be websites, applications, or anything in between.</p>
-                    <p>When I'm not coding, you can find me exploring new music, playing video games, or watching anime.</p>
-                    <p>I created this useless website because I'm bored af</p>
-                </div>
-                
-            </div>
-        </div>
-    </section>
-
-    <!-- Interests Section -->
-    <section id="interests" style="background-color: var(--dark);">
-        <div class="container">
-            <h2 class="section-title" data-aos="fade-up">My Interests</h2>
-            <div class="interests-grid">
-                <div class="interest-card" data-aos="fade-up" data-aos-delay="100">
-                    <div class="interest-icon">
-                        <i class="fas fa-laptop-code"></i>
-                    </div>
-                    <h3>Coding</h3>
-                    <p>Mostly just vibe coding and experimenting with different technologies when the mood strikes. Not claiming to be an expert, but enjoying the process of creating things that work (most of the time).</p>
-                </div>
-                <div class="interest-card" data-aos="fade-up" data-aos-delay="200">
-                  <div class="interest-icon">
-                        <i class="fas fa-tv"></i>
-                    </div>
-                    <h3>Anime</h3>
-                    <p>Love watching anime, especially romance, shounen, isekai, and comedy genres. I enjoy both mainstream hits and underrated masterpieces. When I find a good series, I'll binge-watch entire seasons even without sleep to catch up!</p>
-                </div>
-                <div class="interest-card" data-aos="fade-up" data-aos-delay="300">
-                    <div class="interest-icon">
-                        <i class="fas fa-gamepad"></i>
-                    </div>
-                    <h3>Gaming</h3>
-                    <p>Casual ML player who enjoys gaming on my phone. I don't play everyday, but it's my go-to for relaxation and quick entertainment sessions</p>
-                </div>
-                <div class="interest-card" data-aos="fade-up" data-aos-delay="400">
-                    <div class="interest-icon">
-                        <i class="fas fa-music"></i>
-                    </div>
-                    <h3>Music</h3>
-                    <p>I listen to mainstream music but I'm exploring different bands and artists to find what suits my style. I don't have a specific music taste - if it sounds good to me, I'll listen to it repeatedly</p>
-                </div>
-                <div class="interest-card" data-aos="fade-up" data-aos-delay="500">
-                    <div class="interest-icon">
-                        <i class="fas fa-book-open"></i>
-                    </div>
-                    <h3>Reading</h3>
-                    <p>When I find the time and motivation, I enjoy various genres including romance, thriller, tragedy, comedy, sci-fi, fantasy, and mystery novels.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Random Section -->
-    <section id="random">
-        <div class="container">
-            <h2 class="section-title" data-aos="fade-up">Random Stuff</h2>
-            <div class="random-container" data-aos="fade-up">
-                <div class="random-content" id="random-content">
-                    Click the button below to get a random joke, quote, or fact!
-                </div>
-                <button class="btn" id="random-btn">Generate</button>
-                <div class="random-type" id="random-type"></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Media Section -->
-    <section id="music" style="background-color: var(--dark);">
-        <div class="container">
-            <h2 class="section-title" data-aos="fade-up">Simple Music Player</h2>
-            <div class="media-container">
-                <div class="music-container" data-aos="fade-left">
-                    <h3 id="playlistTitle" contenteditable="true" style="outline: none;">walang kwentang playlist HAHAHAHA</h3>
-                    <div class="music-player">
-                        <div class="track-info">
-                            <div class="track-title">Song Title</div>
-                            <div class="track-artist">Artist Name</div>
-                        </div>
-                        <div class="progress-container">
-                            <div class="progress"></div>
-                        </div>
-                        <div class="controls">
-                            <button id="prev"><i class="fas fa-step-backward"></i></button>
-                            <button id="play" class="play-btn"><i class="fas fa-play"></i></button>
-                            <button id="next"><i class="fas fa-step-forward"></i></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Freedom Wall Section -->
-    <section id="freedom-wall" class="freedom-wall">
-        <div class="container wall-container">
-            <h2 class="section-title" data-aos="fade-up">Freedom Wall</h2>
-            
-            <!-- Message Form -->
-            <div class="message-form" data-aos="fade-up">
-                <h3>Leave a Message</h3>
-                <form id="wall-form">
-                    <div class="form-group">
-                        <label for="user-name">Your Name (optional)</label>
-                        <input type="text" id="user-name" placeholder="Anonymous">
-                    </div>
-                    <div class="form-group">
-                        <label for="user-message">Your Message</label>
-                        <textarea id="user-message" placeholder="Write your message here..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn">Post</button>
-                </form>
-            </div>
-            
-            <!-- Message Preview -->
-            <div class="message-preview" data-aos="fade-up">
-                <div class="preview-content" id="preview-content">
-                    <img src="https://api.dicebear.com/6.x/bottts/svg?seed=Welcome" class="preview-avatar" alt="Avatar">
-                    <div class="preview-name">Welcome to the Freedom Wall!</div>
-                    <div class="preview-message">Be the first to leave a message. Your thoughts will appear here.</div>
-                    <div class="preview-time">Just now</div>
-                </div>
-            </div>
-            
-            <button class="btn view-all-btn" id="view-thread-btn" data-aos="fade-up">View All Messages</button>
-        </div>
-    </section>
+    <!-- Theme Overlay -->
+    <div class="theme-overlay"></div>
     
-    <!-- Thread Modal -->
-    <div class="thread-modal" id="thread-modal">
-        <div class="modal-content">
-            <button class="close-modal" id="close-modal">&times;</button>
-            <h2 class="thread-title">Freedom Wall Thread</h2>
-            <div class="messages-container" id="messages-container">
-                <!-- Messages will be inserted here -->
+    <!-- Background Music -->
+    <div id="musicContainer"></div>
+    
+    <!-- Menu Button -->
+    <button class="menu-button" id="menuButton" aria-label="Toggle menu">
+        <span class="menu-line"></span>
+        <span class="menu-line"></span>
+        <span class="menu-line"></span>
+    </button>
+
+    <!-- Menu Panel -->
+    <div class="menu-panel" id="menuPanel">
+        <!-- Quick Actions Section -->
+        <div class="menu-section">
+            <div class="menu-section-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+                Quick Actions
+            </div>
+            <div class="menu-items" id="quickActions"></div>
+        </div>
+        
+        <!-- Theme Options Section -->
+        <div class="menu-section">
+            <div class="menu-section-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zm0-2V4a8 8 0 110 16z"/>
+                </svg>
+                Theme Options
+            </div>
+            <div class="theme-options" id="themeOptions">
+                <!-- Theme options will be injected by JavaScript -->
             </div>
         </div>
     </div>
+    
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Profile Section -->
+        <div class="profile-section">
+            <div class="profile-image-wrapper">
+                <div class="glow-ring"></div>
+                <img id="profileImage" alt="Profile Picture" class="profile-image" loading="eager">
+            </div>
 
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 Johnryll Garciano. All Rights Reserved.</p>
+            <h1 class="profile-name">
+                <span id="profileName"></span>
+                <span class="verified-badge" id="verifiedBadge"></span>
+            </h1>
+            <p class="profile-subtitle" id="profileSubtitle"></p>
+            <p class="beta-label" id="betaLabel"></p>
+            <p class="profile-quote" id="typingQuote">
+                <span id="quoteText"></span><span class="typing-cursor"></span>
+            </p>
+
+            <!-- Social Icons -->
+            <div class="social-icons" id="socialIcons"></div>
         </div>
-    </footer>
 
-    <!-- Scripts -->
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
-    <script src="playlist.js"></script>
-    <script>
-    // Initialize AOS
-    AOS.init({
-        duration: 1000,
-        once: true,
-        offset: 100
-    });
+        <!-- Stats -->
+        <div class="stats" id="statsContainer"></div>
 
-    // Mobile Menu Toggle
-    const menuBtn = document.querySelector('.menu-btn');
-    const navLinks = document.querySelector('.nav-links');
-
-    if (menuBtn && navLinks) {
-        menuBtn.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-        });
-    }
-
-    // Close mobile menu when clicking on a link
-    document.querySelectorAll('.nav-links a').forEach(link => {
-        link.addEventListener('click', () => {
-            if (navLinks) navLinks.classList.remove('active');
-        });
-    });
-
-    // Random Content Generator
-    const randomBtn = document.getElementById('random-btn');
-    const randomContent = document.getElementById('random-content');
-    const randomType = document.getElementById('random-type');
-
-    const jokes = [
-        "Why don't scientists trust atoms? Because they make up everything!",
-        "Why did the scarecrow win an award? Because he was outstanding in his field!",
-        "Why don't skeletons fight each other? They don't have the guts.",
-        "What do you call a fake noodle? An impasta!",
-        "Why did the math book look sad? Because it had too many problems."
-    ];
-
-    const quotes = [
-        "The only way to do great work is to love what you do. - Steve Jobs",
-        "Innovation distinguishes between a leader and a follower. - Steve Jobs",
-        "The future belongs to those who believe in the beauty of their dreams. - Eleanor Roosevelt",
-        "The way to get started is to quit talking and begin doing. - Walt Disney",
-        "Life is what happens when you're busy making other plans. - John Lennon"
-    ];
-
-    const facts = [
-        "Honey never spoils. Archaeologists have found pots of honey in ancient Egyptian tombs that are over 3,000 years old and still perfectly edible.",
-        "Octopuses have three hearts. Two pump blood to the gills, while the third pumps it to the rest of the body.",
-        "The shortest war in history was between Britain and Zanzibar on August 27, 1896. Zanzibar surrendered after 38 minutes.",
-        "A group of flamingos is called a 'flamboyance'.",
-        "The world's oldest known recipe is for beer. It dates back about 5,000 years and was found in Sumeria (modern-day Iraq)."
-    ];
-
-    if (randomBtn && randomContent && randomType) {
-        randomBtn.addEventListener('click', () => {
-            const randomCategory = Math.floor(Math.random() * 3);
+        <!-- Time & Battery -->
+        <div class="time-battery-section">
+            <div class="ph-time-display" id="phTime"></div>
+            <div class="time-label" id="timeLabel"></div>
             
-            switch(randomCategory) {
-                case 0: // Joke
-                    const jokeIndex = Math.floor(Math.random() * jokes.length);
-                    randomContent.textContent = jokes[jokeIndex];
-                    randomType.textContent = "Joke";
-                    break;
-                case 1: // Quote
-                    const quoteIndex = Math.floor(Math.random() * quotes.length);
-                    randomContent.textContent = quotes[quoteIndex];
-                    randomType.textContent = "Quote";
-                    break;
-                case 2: // Fact
-                    const factIndex = Math.floor(Math.random() * facts.length);
-                    randomContent.textContent = facts[factIndex];
-                    randomType.textContent = "Fun Fact";
-                    break;
-            }
-        });
-    }
-
-    // Music Player - Custom Implementation
-    const playBtn = document.getElementById('play');
-    const prevBtn = document.getElementById('prev');
-    const nextBtn = document.getElementById('next');
-    const trackTitle = document.querySelector('.track-title');
-    const trackArtist = document.querySelector('.track-artist');
-    const progress = document.querySelector('.progress');
-    const progressContainer = document.querySelector('.progress-container');
-    
-    // Create time display elements
-    const timeDisplay = document.createElement('div');
-    timeDisplay.className = 'time-display';
-    timeDisplay.style.display = 'flex';
-    timeDisplay.style.justifyContent = 'space-between';
-    timeDisplay.style.marginTop = '10px';
-    timeDisplay.style.fontSize = '0.8rem';
-    timeDisplay.style.color = '#aaa';
-    
-    const currentTimeEl = document.createElement('span');
-    currentTimeEl.className = 'current-time';
-    currentTimeEl.textContent = '0:00';
-    
-    const durationEl = document.createElement('span');
-    durationEl.className = 'duration';
-    durationEl.textContent = '0:00';
-    
-    timeDisplay.appendChild(currentTimeEl);
-    timeDisplay.appendChild(durationEl);
-    
-    // Insert time display after progress container
-    if (progressContainer) {
-        progressContainer.parentNode.insertBefore(timeDisplay, progressContainer.nextSibling);
-    }
-
-    // Music player state
-    let currentTrack = 0;
-    let shuffledIndexes = [];
-    let isPlaying = false;
-    let audioElement = null;
-    let progressUpdateInterval = null;
-    let isSeeking = false;
-
-    function formatTime(seconds) {
-        if (isNaN(seconds)) return '0:00';
-        const mins = Math.floor(seconds / 60);
-        const secs = Math.floor(seconds % 60);
-        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-    }
-    
-    function shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-    }
-
-    // Initialize the shuffled indexes
-    function initShuffledPlaylist() {
-        // Create an array of indexes [0, 1, 2, ...]
-        shuffledIndexes = Array.from({length: playlist.length}, (_, i) => i);
-        // Shuffle the indexes
-        shuffledIndexes = shuffleArray(shuffledIndexes);
-    }
-
-    function loadTrack(index) {
-        // Get the actual track index from our shuffled mapping
-        const actualIndex = shuffledIndexes[index];
-        // Clear any existing interval
-        clearInterval(progressUpdateInterval);
-        
-        // Remove existing audio element if any
-        if (audioElement) {
-            audioElement.pause();
-            audioElement.removeEventListener('timeupdate', updateProgress);
-            audioElement.removeEventListener('ended', handleTrackEnd);
-            audioElement = null;
-        }
-        
-        // Create new audio element
-        audioElement = new Audio();
-        audioElement.src = playlist[actualIndex].src;
-        audioElement.preload = 'metadata';
-        
-        // Set up event listeners
-        audioElement.addEventListener('loadedmetadata', function() {
-            if (!isNaN(audioElement.duration) && audioElement.duration !== Infinity) {
-                durationEl.textContent = formatTime(audioElement.duration);
-            } else {
-                setTimeout(() => {
-                    if (!isNaN(audioElement.duration) && audioElement.duration !== Infinity) {
-                        durationEl.textContent = formatTime(audioElement.duration);
-                    }
-                }, 1000);
-            }
-        });
-        
-        // Handle system pauses but ignore natural endings
-        audioElement.addEventListener('pause', function() {
-            // Check if the audio actually finished (currentTime very close to duration)
-            const isActuallyEnded = audioElement.currentTime >= audioElement.duration - 0.1;
-            
-            // Only update UI if this wasn't a natural track ending
-            if (isPlaying && !isActuallyEnded) {
-                isPlaying = false;
-                if (playBtn) playBtn.innerHTML = '<i class="fas fa-play"></i>';
-                clearInterval(progressUpdateInterval);
-                
-                // Update media session state
-                if ('mediaSession' in navigator) {
-                    navigator.mediaSession.playbackState = 'paused';
-                }
-            }
-        });
-        
-        audioElement.addEventListener('play', function() {
-            if (!isPlaying) {
-                isPlaying = true;
-                if (playBtn) playBtn.innerHTML = '<i class="fas fa-pause"></i>';
-                progressUpdateInterval = setInterval(updateProgress, 100);
-                
-                // Update media session state
-                if ('mediaSession' in navigator) {
-                    navigator.mediaSession.playbackState = 'playing';
-                }
-            }
-        });
-        
-        // Listen for time updates
-        audioElement.addEventListener('timeupdate', updateProgress);
-        
-        // Set flag when track ends naturally
-        audioElement.addEventListener('ended', function() {
-            handleTrackEnd();
-        });
-        
-        audioElement.addEventListener('error', function(e) {
-            console.error('Audio error:', e);
-            durationEl.textContent = '0:00';
-        });
-        
-        if (trackTitle) trackTitle.textContent = playlist[actualIndex].title;
-        if (trackArtist) trackArtist.textContent = playlist[actualIndex].artist;
-        
-        // Reset progress display
-        if (progress) progress.style.width = '0%';
-        if (currentTimeEl) currentTimeEl.textContent = '0:00';
-        
-        // Update media session metadata
-        if ('mediaSession' in navigator) {
-            updateMediaSessionMetadata();
-            navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
-        }
-        
-        // If we were playing, start the new track
-        if (isPlaying) {
-            playCurrentTrack();
-        }
-    }
-    
-    function handleTrackEnd() {
-    console.log('Track ended naturally, moving to next track');
-    nextTrack();
-}
-
-    // Media Session API implementation
-    if ('mediaSession' in navigator) {
-        function updateMediaSessionMetadata() {
-            if (currentTrack >= shuffledIndexes.length || currentTrack < 0) {
-                console.warn('Invalid track index:', currentTrack);
-                return;
-            }
-            
-            const actualIndex = shuffledIndexes[currentTrack];
-            
-            // ADD ANOTHER SAFETY CHECK
-            if (actualIndex >= playlist.length || actualIndex < 0 || !playlist[actualIndex]) {
-                console.warn('Invalid playlist index:', actualIndex);
-                return;
-            }
-            const track = playlist[actualIndex];
-            navigator.mediaSession.metadata = new MediaMetadata({
-                title: track.title,
-                artist: track.artist
-            });
-        }
-        
-        
-        
-        navigator.mediaSession.setActionHandler('nexttrack', function() {
-            nextTrack();
-            updateMediaSessionMetadata();
-        });
-        
-        navigator.mediaSession.setActionHandler('previoustrack', function() {
-            prevTrack();
-            updateMediaSessionMetadata();
-        });
-        
-        
-        
-        // Update metadata when track changes
-        if (audioElement) {
-            audioElement.addEventListener('loadedmetadata', function() {
-                updateMediaSessionMetadata();
-            });
-            
-            // Update playback state
-            audioElement.addEventListener('play', function() {
-                navigator.mediaSession.playbackState = 'playing';
-            });
-            
-            audioElement.addEventListener('pause', function() {
-                navigator.mediaSession.playbackState = 'paused';
-            });
-        }
-        
-        // Initial setup
-        updateMediaSessionMetadata();
-    }
-
-    function updateProgress() {
-        if (audioElement && !isSeeking && !isNaN(audioElement.duration) && audioElement.duration > 0) {
-            const currentTime = audioElement.currentTime;
-            const duration = audioElement.duration;
-            const progressPercent = (currentTime / duration) * 100;
-            
-            if (progress) progress.style.width = `${progressPercent}%`;
-            if (currentTimeEl) currentTimeEl.textContent = formatTime(currentTime);
-            
-            // Update duration if not set yet
-            if (durationEl && durationEl.textContent === '0:00' && !isNaN(duration)) {
-                durationEl.textContent = formatTime(duration);
-            }
-        }
-    }
-
-    function playCurrentTrack() {
-        if (!audioElement) {
-            loadTrack(currentTrack);
-            return;
-        }
-        
-        audioElement.play().then(() => {
-            isPlaying = true;
-            if (playBtn) playBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            
-            // Update progress regularly
-            progressUpdateInterval = setInterval(updateProgress, 100);
-        }).catch(error => {
-            console.error("Playback failed:", error);
-            isPlaying = false;
-            if (playBtn) playBtn.innerHTML = '<i class="fas fa-play"></i>';
-        });
-    }
-
-    function pauseCurrentTrack() {
-        if (audioElement) {
-            audioElement.pause();
-            isPlaying = false;
-            if (playBtn) playBtn.innerHTML = '<i class="fas fa-play"></i>';
-            clearInterval(progressUpdateInterval);
-        }
-    }
-
-    function togglePlayback() {
-        if (isPlaying) {
-            pauseCurrentTrack();
-        } else {
-            playCurrentTrack();
-        }
-    }
-
-    function nextTrack() {
-        currentTrack = (currentTrack + 1) % playlist.length;
-        loadTrack(currentTrack);
-    }
-
-    function prevTrack() {
-        // If more than 3 seconds into the song, restart it
-        if (audioElement && audioElement.currentTime > 3) {
-            seekToPosition(0);
-            if (isPlaying) {
-                playCurrentTrack();
-            }
-        } else {
-            // Otherwise go to the previous track
-            currentTrack = (currentTrack - 1 + playlist.length) % playlist.length;
-            loadTrack(currentTrack);
-            playCurrentTrack();
-        }
-    }
-    
-    // Initialize the shuffled playlist when the page loads
-    initShuffledPlaylist();
-    // Load the first track (which will be random due to shuffled indexes)
-    loadTrack(currentTrack);
-
-    function seekToPosition(percent) {
-      console.log("seekToPosition called with:", percent);
-        if (!audioElement || isNaN(audioElement.duration) || audioElement.duration <= 0) return;
-        
-        const wasPlaying = isPlaying;
-        
-        if (wasPlaying) {
-          audioElement.pause();
-        }
-        
-        // Calculate the new position in seconds
-        const newTime = percent * audioElement.duration;
-        
-        // Don't allow seeking beyond the track duration
-        const clampedTime = Math.max(0, Math.min(newTime, audioElement.duration));
-        
-        console.log("Setting audio time to:", clampedTime, "seconds");
-        
-        // Set the seeking flag to prevent updateProgress from interfering
-        isSeeking = true;
-        
-        // Set the new position
-        audioElement.currentTime = clampedTime;
-        
-        // Update progress display immediately
-        const progressPercent = (clampedTime / audioElement.duration) * 100;
-        if (progress) progress.style.width = `${progressPercent}%`;
-        if (currentTimeEl) currentTimeEl.textContent = formatTime(clampedTime);
-        
-          // If audio was playing, resume playback after a brief delay
-    if (wasPlaying) {
-        setTimeout(() => {
-            audioElement.play().catch(error => {
-                console.error("Playback failed after seek:", error);
-            });
-        }, 50);
-    }
-        
-        // Clear the seeking flag after a short delay
-        setTimeout(() => {
-            isSeeking = false;
-            console.log("Audio currentTime after setting:", audioElement.currentTime);
-        }, 100);
-    }
-
-    function handleSeekEvent(clientX) {
-        console.log("Seek Event Triggered");
-        if (!progressContainer) return;
-        
-        const rect = progressContainer.getBoundingClientRect();
-        const clickX = clientX - rect.left;
-        const width = rect.width;
-        const percent = Math.max(0, Math.min(1, clickX / width));
-        
-        console.log("Seeking to:", percent, "percent");
-        
-        
-        
-        // Seek to the new position
-        seekToPosition(percent);
-        
-        
-    }
-
-    // Add event listeners
-    if (playBtn) {
-        playBtn.addEventListener('click', togglePlayback);
-    }
-    
-    if (nextBtn) {
-        nextBtn.addEventListener('click', nextTrack);
-    }
-    
-    if (prevBtn) {
-        prevBtn.addEventListener('click', prevTrack);
-    }
-    
-    // Desktop click event
-    if (progressContainer) {
-        
-
-        // Mobile touch events
-        let touchStartX = 0;
-        
-        progressContainer.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            touchStartX = e.touches[0].clientX;
-            handleSeekEvent(touchStartX);
-        });
-
-        progressContainer.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            handleSeekEvent(e.touches[0].clientX);
-        });
-
-        progressContainer.addEventListener('touchend', (e) => {
-            e.preventDefault();
-        });
-    }
-
-    // Firebase Configuration and Freedom Wall Implementation
-    const firebaseConfig = {
-        // Replace with your Firebase project config
-        apiKey: "AIzaSyC4eSmx-WycFDSujVgDvWlPju68t2nlb14",
-        authDomain: "myspace-eff71.firebaseapp.com",
-        projectId: "myspace-eff71",
-        storageBucket: "myspace-eff71.firebasestorage.app",
-        messagingSenderId: "141026296672",
-        appId: "1:141026296672:web:883aeb41bfcee7948ad405"
-    };
-
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    // Reference to the messages collection
-    const messagesRef = db.collection('messages');
-
-    // Update connection status
-    const statusElement = document.getElementById('firebase-status');
-    const statusText = document.getElementById('status-text');
-    
-    // Listen for connection state changes
-    db.enableNetwork()
-    .then(() => {
-        if (statusElement && statusText) {
-            statusElement.className = 'firebase-status status-connected';
-            statusText.textContent = 'Connected';
-        }
-    })
-    .catch((err) => {
-        if (statusElement && statusText) {
-            statusElement.className = 'firebase-status status-disconnected';
-            statusText.textContent = 'Offline - Using local messages';
-        }
-        console.log('Error enabling network:', err);
-    });
-
-    // Freedom Wall Implementation
-    const wallForm = document.getElementById('wall-form');
-    const previewContent = document.getElementById('preview-content');
-    const viewThreadBtn = document.getElementById('view-thread-btn');
-    const threadModal = document.getElementById('thread-modal');
-    const closeModalBtn = document.getElementById('close-modal');
-    const messagesContainer = document.getElementById('messages-container');
-
-    // Store messages
-    let messages = [];
-
-    // Function to generate a random avatar URL using DiceBear API
-    function generateAvatarUrl(seed) {
-        const styles = ['bottts', 'bottts-neutral', 'fun-emoji', 'identicon', 'adventurer'];
-        const randomStyle = styles[Math.floor(Math.random() * styles.length)];
-        return `https://api.dicebear.com/9.x/${randomStyle}/svg?seed=${seed}`;
-    }
-
-    // Function to add a new message to Firebase
-    function addMessageToFirebase(name, message) {
-        const timestamp = firebase.firestore.FieldValue.serverTimestamp();
-        const avatarSeed = name || 'Anonymous' + Date.now();
-        
-        return messagesRef.add({
-            name: name || 'Anonymous',
-            message: message,
-            timestamp: timestamp,
-            avatar: generateAvatarUrl(avatarSeed)
-        });
-    }
-
-    // Function to update the preview with the latest message
-    function updatePreview() {
-        if (previewContent && messages.length > 0) {
-            const latestMessage = messages[0];
-            
-            // Create fade animation by changing opacity
-            previewContent.style.opacity = 0;
-            
-            setTimeout(() => {
-                previewContent.innerHTML = `
-                    <img src="${latestMessage.avatar}" class="preview-avatar" alt="Avatar">
-                    <div class="preview-name">${latestMessage.name}</div>
-                    <div class="preview-message">${latestMessage.message}</div>
-                    <div class="preview-time">${formatMessageTime(latestMessage.timestamp)}</div>
-                `;
-                
-                // Fade back in
-                previewContent.style.opacity = 1;
-            }, 500);
-        } else if (previewContent) {
-            // Show default message if no messages
-            previewContent.innerHTML = `
-                <img src="https://api.dicebear.com/9.x/bottts/svg?seed=Welcome" class="preview-avatar" alt="Avatar">
-                <div class="preview-name">Welcome to the Freedom Wall!</div>
-                <div class="preview-message">Be the first to leave a message. Your thoughts will appear here.</div>
-                <div class="preview-time">Just now</div>
-            `;
-        }
-    }
-
-    // Function to format the timestamp for display
-    function formatMessageTime(timestamp) {
-        if (!timestamp) return 'Just now';
-        
-        const now = new Date();
-        const messageTime = timestamp.toDate();
-        const diffInSeconds = Math.floor((now - messageTime) / 1000);
-        
-        if (diffInSeconds < 60) {
-            return 'Just now';
-        } else if (diffInSeconds < 3600) {
-            const minutes = Math.floor(diffInSeconds / 60);
-            return `${minutes} min${minutes !== 1 ? 's' : ''} ago`;
-        } else if (diffInSeconds < 86400) {
-            const hours = Math.floor(diffInSeconds / 3600);
-            return `${hours} hr${hours !== 1 ? 's' : ''} ago`;
-        } else {
-            const days = Math.floor(diffInSeconds / 86400);
-            return `${days} day${days !== 1 ? 's' : ''} ago`;
-        }
-    }
-
-    // Function to update the thread view
-    function updateThread() {
-        if (!messagesContainer) return;
-        
-        messagesContainer.innerHTML = '';
-        
-        if (messages.length === 0) {
-            messagesContainer.innerHTML = '<p class="no-messages">No messages yet. Be the first to leave one!</p>';
-            return;
-        }
-        
-        messages.forEach(msg => {
-            const messageElement = document.createElement('div');
-            messageElement.className = 'message-item';
-            messageElement.innerHTML = `
-                <img src="${msg.avatar}" class="message-avatar" alt="Avatar">
-                <div class="message-content">
-                    <div class="message-header">
-                        <div class="message-name">${msg.name}</div>
-                        <div class="message-time">${formatMessageTime(msg.timestamp)}</div>
-                    </div>
-                    <div class="message-text">${msg.message}</div>
+            <div class="battery-container">
+                <div class="battery-icon">
+                    <div class="battery-fill" id="batteryFill"></div>
                 </div>
-            `;
-            messagesContainer.appendChild(messageElement);
-        });
-    }
+                <div class="battery-percentage" id="batteryPercentage"></div>
+            </div>
+        </div>
 
-    // Function to cycle through messages in the preview
-    let previewIndex = 0;
-    function cyclePreviewMessages() {
-        if (previewContent && messages.length > 0) {
-            previewIndex = (previewIndex + 1) % messages.length;
-            const message = messages[previewIndex];
+        <!-- Footer -->
+        <div class="footer">
+            <p class="footer-text" id="footerText"></p>
+        </div>
+    </div>
+
+    <!-- Load Config First -->
+    <script async src="config.js"></script>
+    
+    <!-- Main App Logic -->
+    <script defer>
+        // Wait for DOM to be ready
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize everything from config
+            initializeFromConfig();
             
-            // Create fade animation
-            previewContent.style.opacity = 0;
+            // Set up theme system
+            setupThemeSystem();
             
-            setTimeout(() => {
-                previewContent.innerHTML = `
-                    <img src="${message.avatar}" class="preview-avatar" alt="Avatar">
-                    <div class="preview-name">${message.name}</div>
-                    <div class="preview-message">${message.message}</div>
-                    <div class="preview-time">${formatMessageTime(message.timestamp)}</div>
+            // Initialize menu
+            setupMenu();
+            
+            // Start typewriter effect
+            startTypewriter();
+            
+            // Start clock
+            startClock();
+            
+            // Initialize battery
+            setupBattery();
+            
+            // Initialize social icons
+            setupSocialIcons();
+            
+            // Initialize stats
+            setupStats();
+            
+            // Initialize music
+            setupMusic();
+            
+            // Add touch device class if needed
+            detectTouchDevice();
+            
+            // Log initialization
+            if (SPACE_CONFIG.advanced.enableConsoleLog) {
+                console.log('Portfolio initialized successfully');
+            }
+        });
+
+        // ===== INITIALIZATION FUNCTIONS =====
+        
+        function initializeFromConfig() {
+            const config = SPACE_CONFIG;
+            
+            // Set document title
+            document.title = config.meta.title;
+            document.getElementById('pageTitle').textContent = config.meta.title;
+            
+            // Set favicon
+            document.getElementById('favicon').href = config.meta.favicon.url;
+            document.getElementById('shortcutIcon').href = config.meta.favicon.url;
+            
+            // Preload critical resources
+            const preloadImage = document.getElementById('preloadProfileImage');
+            if (preloadImage) {
+                preloadImage.href = config.profile.image.url;
+            }
+            
+            // Set meta tags
+            setMetaTags(config.meta);
+            
+            // Set profile info
+            document.getElementById('profileName').textContent = config.profile.name;
+            document.getElementById('profileSubtitle').textContent = config.profile.subtitle;
+            document.getElementById('betaLabel').textContent = config.profile.betaLabel;
+            
+            // Set profile image
+            const profileImg = document.getElementById('profileImage');
+            profileImg.src = config.profile.image.url;
+            profileImg.alt = config.profile.image.alt;
+            profileImg.width = config.profile.image.width;
+            profileImg.height = config.profile.image.height;
+            
+            // Set footer
+            document.getElementById('footerText').textContent = config.footer.text;
+            
+            // Set timezone label
+            document.getElementById('timeLabel').textContent = config.time.timezoneLabel;
+        }
+        
+        function setMetaTags(meta) {
+            // Open Graph
+            document.getElementById('ogTitle').content = meta.og.title;
+            document.getElementById('ogDescription').content = meta.og.description;
+            document.getElementById('ogImage').content = meta.og.image;
+            document.getElementById('ogType').content = meta.og.type;
+            document.getElementById('ogUrl').content = meta.og.url;
+            
+            // Twitter
+            document.getElementById('twitterCard').content = meta.twitter.card;
+            document.getElementById('twitterTitle').content = meta.twitter.title;
+            document.getElementById('twitterDescription').content = meta.twitter.description;
+            document.getElementById('twitterImage').content = meta.twitter.image;
+            
+            // Other meta
+            document.getElementById('metaDescription').content = meta.description;
+            document.getElementById('metaAuthor').content = meta.author;
+        }
+        
+        function setupThemeSystem() {
+            const config = SPACE_CONFIG;
+            const themeOptions = document.getElementById('themeOptions');
+            const overlay = document.querySelector('.theme-overlay');
+            
+            // Get saved theme or use default
+            const savedTheme = localStorage.getItem('portfolioTheme');
+            const currentTheme = savedTheme || config.theme.activeTheme;
+            
+            // Apply initial theme
+            applyTheme(currentTheme);
+            
+            // Clear theme options container
+            themeOptions.innerHTML = '';
+            
+            // Populate theme options
+            Object.entries(config.theme.themes).forEach(([key, theme]) => {
+                const option = document.createElement('button');
+                option.className = `theme-option ${key === currentTheme ? 'active' : ''}`;
+                option.dataset.theme = key;
+                option.innerHTML = `
+                    ${theme.icon}
+                    <div class="theme-tooltip">${theme.name}</div>
                 `;
                 
-                // Fade back in
-                previewContent.style.opacity = 1;
-            }, 500);
-        }
-    }
-
-    // Event listener for form submission
-    if (wallForm) {
-        wallForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const nameInput = document.getElementById('user-name');
-            const messageInput = document.getElementById('user-message');
-            
-            const name = nameInput ? nameInput.value.trim() : '';
-            const message = messageInput ? messageInput.value.trim() : '';
-            
-            if (message) {
-                // Add message to Firebase
-                addMessageToFirebase(name, message)
-                    .then(() => {
-                        // Clear form
-                        if (messageInput) messageInput.value = '';
-                        if (nameInput) nameInput.value = '';
+                option.addEventListener('click', () => {
+                    if (config.animations.themeSwitchEffect) {
+                        document.body.classList.add('theme-switching');
+                        overlay.style.background = theme.background;
                         
-                        // Show success feedback
-                        const submitBtn = this.querySelector('button[type="submit"]');
-                        if (submitBtn) {
-                            const originalText = submitBtn.textContent;
-                            submitBtn.textContent = 'Posted!';
-                            submitBtn.style.backgroundColor = '#4CAF50';
-                            
-                            setTimeout(() => {
-                                submitBtn.textContent = originalText;
-                                submitBtn.style.backgroundColor = '';
-                            }, 2000);
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error adding message: ", error);
-                        alert("Sorry, there was an error posting your message. Please try again.");
-                    });
-            }
-        });
-    }
-
-    // Event listeners for modal
-    if (viewThreadBtn) {
-        viewThreadBtn.addEventListener('click', function() {
-            updateThread();
-            if (threadModal) {
-                threadModal.style.display = 'block';
-                document.body.style.overflow = 'hidden';
-            }
-        });
-    }
-
-    if (closeModalBtn) {
-        closeModalBtn.addEventListener('click', function() {
-            if (threadModal) {
-                threadModal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            }
-        });
-    }
-
-    // Close modal when clicking outside
-    if (threadModal) {
-        threadModal.addEventListener('click', function(e) {
-            if (e.target === threadModal) {
-                threadModal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            }
-        });
-    }
-
-    // Real-time listener for messages
-    if (messagesRef) {
-        messagesRef
-            .orderBy('timestamp', 'desc')
-            .limit(20)
-            .onSnapshot((snapshot) => {
-                messages = [];
-                snapshot.forEach((doc) => {
-                    messages.push({ id: doc.id, ...doc.data() });
-                });
-                
-                updatePreview();
-                updateThread();
-                
-                // If there are messages, start cycling through them
-                if (messages.length > 0) {
-                    // Clear any existing interval
-                    if (window.previewInterval) {
-                        clearInterval(window.previewInterval);
+                        setTimeout(() => {
+                            applyTheme(key);
+                            document.body.classList.remove('theme-switching');
+                        }, 300);
+                    } else {
+                        applyTheme(key);
                     }
                     
-                    // Start cycling through messages every 5 seconds
-                    window.previewInterval = setInterval(cyclePreviewMessages, 5000);
+                    // Update active state
+                    document.querySelectorAll('.theme-option').forEach(opt => {
+                        opt.classList.remove('active');
+                    });
+                    option.classList.add('active');
+                });
+                
+                themeOptions.appendChild(option);
+            });
+        }
+        
+        function applyTheme(themeKey) {
+            const config = SPACE_CONFIG;
+            const theme = config.theme.themes[themeKey];
+            const root = document.documentElement;
+            
+            // Update CSS custom properties
+            root.style.setProperty('--bg-color', theme.background);
+            root.style.setProperty('--text-primary', theme.textPrimary);
+            root.style.setProperty('--text-secondary', theme.textSecondary);
+            root.style.setProperty('--accent-color', theme.accent);
+            root.style.setProperty('--accent-glow', theme.accentGlow);
+            root.style.setProperty('--border-color', theme.border);
+            root.style.setProperty('--menu-hover-bg', theme.menuHover);
+            root.style.setProperty('--stats-bg', theme.statsBg || 'transparent');
+            root.style.setProperty('--font-family', theme.fontFamily || config.theme.themes.light.fontFamily);
+            
+            // Update theme icon filter for better visibility
+            const isDark = theme.background.toLowerCase().includes('#0') || 
+                          theme.background.toLowerCase().includes('black') ||
+                          theme.background.toLowerCase().includes('dark');
+            
+            root.style.setProperty('--theme-icon-filter', isDark ? 'invert(1)' : 'invert(0)');
+            
+            // Update accent color in glow ring animation
+            const glowRing = document.querySelector('.glow-ring');
+            if (glowRing) {
+                glowRing.style.background = `linear-gradient(135deg, ${theme.accent}, #ff5252, ${theme.accent})`;
+            }
+            
+            // Save theme preference
+            localStorage.setItem('portfolioTheme', themeKey);
+            
+            // Update config
+            SPACE_CONFIG.theme.activeTheme = themeKey;
+            
+            // Log theme change
+            if (config.advanced.enableConsoleLog) {
+                console.log(`Theme changed to: ${theme.name}`);
+            }
+        }
+        
+        function setupMenu() {
+            const config = SPACE_CONFIG;
+            const quickActions = document.getElementById('quickActions');
+            
+            config.menu.forEach((item, index) => {
+                if (!item.enabled) return;
+                
+                const menuItem = document.createElement('a');
+                menuItem.className = 'menu-item';
+                menuItem.href = item.url || '#';
+                menuItem.setAttribute('role', 'button');
+                
+                if (item.action === 'toggleMusic') {
+                    menuItem.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        toggleMusic();
+                        updateMusicMenuItem(menuItem);
+                    });
+                } else if (item.url && item.url !== '#') {
+                    menuItem.target = "_blank";
+                    menuItem.rel = "noopener noreferrer";
+                    menuItem.addEventListener('click', () => {
+                        closeMenu();
+                    });
+                } else {
+                    menuItem.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        closeMenu();
+                    });
                 }
-            }, (error) => {
-                console.error("Error getting messages: ", error);
-                if (statusElement && statusText) {
-                    statusElement.className = 'firebase-status status-disconnected';
-                    statusText.textContent = 'Error connecting to Freedom Wall';
+                
+                let icon = '';
+                if (item.action === 'toggleMusic') {
+                    icon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                    </svg>`;
+                } else if (item.url && item.url.includes('github')) {
+                    icon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>`;
+                } else if (item.url && item.url.includes('mailto:')) {
+                    icon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                    </svg>`;
+                }
+                
+                menuItem.innerHTML = `
+                    <div class="menu-item-title">
+                        ${icon}
+                        <span>${item.title}</span>
+                    </div>
+                    <div class="menu-item-desc">${item.description}</div>
+                `;
+                
+                quickActions.appendChild(menuItem);
+            });
+            
+            // Menu toggle functionality
+            const menuButton = document.getElementById('menuButton');
+            let menuOpen = false;
+            
+            function toggleMenu() {
+                menuOpen = !menuOpen;
+                menuPanel.classList.toggle('active', menuOpen);
+                menuButton.classList.toggle('active', menuOpen);
+            }
+            
+            function closeMenu() {
+                menuOpen = false;
+                menuPanel.classList.remove('active');
+                menuButton.classList.remove('active');
+            }
+            
+            menuButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleMenu();
+            });
+            
+            // Close menu when clicking outside
+            document.addEventListener('click', (event) => {
+                if (menuOpen && !menuPanel.contains(event.target) && event.target !== menuButton) {
+                    closeMenu();
                 }
             });
-    }
-
-    // Initialize the preview and thread
-    updatePreview();
-    updateThread();
-    
-    const playlistTitleRef = db.collection('siteData').doc('playlistTitle');
-
-// Function to update the playlist title in Firebase
-function updatePlaylistTitleInFirebase(newTitle) {
-  return playlistTitleRef.set({
-    title: newTitle,
-    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-  });
-}
-
-// Real-time listener for playlist title changes
-function setupPlaylistTitleListener() {
-  playlistTitleRef.onSnapshot((doc) => {
-    if (doc.exists) {
-      const data = doc.data();
-      if (data && data.title) {
-        // Update the title in the UI
-        const playlistTitleElement = document.getElementById("playlistTitle");
-        if (playlistTitleElement && playlistTitleElement.textContent !== data.title) {
-          playlistTitleElement.textContent = data.title;
-          
+            
+            // Close menu on escape
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && menuOpen) {
+                    closeMenu();
+                }
+            });
+            
+            // Update music menu item state
+            function updateMusicMenuItem(menuItem) {
+                const audio = window.portfolioMusic;
+                if (!audio) return;
+                
+                const icon = menuItem.querySelector('svg');
+                if (icon) {
+                    if (audio.paused) {
+                        // Change to play icon
+                        icon.innerHTML = `<path d="M8 5v14l11-7z"/>`;
+                    } else {
+                        // Change to pause icon
+                        icon.innerHTML = `<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>`;
+                    }
+                }
+            }
         }
-      }
-    }
-  }, (error) => {
-    console.error("Playlist title listener error:", error);
-  });
-}
-
-// Initialize the playlist title
-playlistTitleRef.get().then((doc) => {
-    if (doc.exists && doc.data().title) {
-        playlistTitle.textContent = doc.data().title;
-    } 
-}).catch((error) => {
-    console.error("Error getting playlist title:", error);
-});
-
-const playlistTitle = document.getElementById("playlistTitle");
-
-// Set up the real-time listener for playlist title
-setupPlaylistTitleListener();
-
-// Save changes to Firebase when user edits
-playlistTitle.addEventListener('input', function() {
-    updatePlaylistTitleInFirebase(this.textContent)
-        .catch(error => {
-            console.error("Error updating playlist title:", error);
+        
+        function startTypewriter() {
+            const config = SPACE_CONFIG;
+            const typewriterTexts = config.profile.quotes;
+            const quoteText = document.getElementById('quoteText');
+            const typingQuote = document.getElementById('typingQuote');
+            
+            if (!config.animations.typingEffect || typewriterTexts.length === 0) {
+                quoteText.textContent = typewriterTexts[0] || "";
+                return;
+            }
+            
+            let currentTextIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+            let isPaused = false;
+            let typeTimeout;
+            
+            function typeWriter() {
+                if (isPaused) return;
+                
+                const currentText = typewriterTexts[currentTextIndex];
+                
+                if (!isDeleting && charIndex < currentText.length) {
+                    quoteText.textContent = currentText.substring(0, charIndex + 1);
+                    charIndex++;
+                    typeTimeout = setTimeout(typeWriter, config.profile.typing.typeSpeed);
+                } else if (isDeleting && charIndex > 0) {
+                    quoteText.textContent = currentText.substring(0, charIndex - 1);
+                    charIndex--;
+                    typeTimeout = setTimeout(typeWriter, config.profile.typing.deleteSpeed);
+                } else if (!isDeleting && charIndex === currentText.length) {
+                    typingQuote.classList.add('quote-glow');
+                    
+                    isPaused = true;
+                    typeTimeout = setTimeout(() => {
+                        typingQuote.classList.remove('quote-glow');
+                        isPaused = false;
+                        isDeleting = true;
+                        typeTimeout = setTimeout(typeWriter, 1000);
+                    }, config.profile.typing.pauseDuration);
+                } else if (isDeleting && charIndex === 0) {
+                    isDeleting = false;
+                    currentTextIndex = (currentTextIndex + 1) % typewriterTexts.length;
+                    typeTimeout = setTimeout(typeWriter, 500);
+                }
+            }
+            
+            // Start after a delay
+            typeTimeout = setTimeout(typeWriter, 1500);
+            
+            // Clean up timeout on page unload
+            window.addEventListener('beforeunload', () => {
+                if (typeTimeout) clearTimeout(typeTimeout);
+            });
+        }
+        
+        function startClock() {
+            const config = SPACE_CONFIG;
+            const timeDisplay = document.getElementById('phTime');
+            let clockInterval;
+            
+            function updateClock() {
+                const now = new Date();
+                let displayTime;
+                
+                try {
+                    displayTime = new Intl.DateTimeFormat('en-US', {
+                        timeZone: config.time.timezoneCode,
+                        hour12: true,
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    }).format(now);
+                } catch (e) {
+                    // Fallback: manually adjust for GMT offset
+                    const gmtOffset = parseInt(config.time.timezone.replace('GMT', '')) || 8;
+                    const phTime = new Date(now.getTime() + (gmtOffset * 60 * 60 * 1000));
+                    
+                    const hours = String(phTime.getUTCHours()).padStart(2, '0');
+                    const minutes = String(phTime.getUTCMinutes()).padStart(2, '0');
+                    const seconds = String(phTime.getUTCSeconds()).padStart(2, '0');
+                    displayTime = `${hours}:${minutes}:${seconds}`;
+                }
+                
+                timeDisplay.textContent = displayTime;
+            }
+            
+            updateClock();
+            clockInterval = setInterval(updateClock, 1000);
+            
+            // Clean up interval on page unload
+            window.addEventListener('beforeunload', () => {
+                if (clockInterval) clearInterval(clockInterval);
+            });
+        }
+        
+        function setupBattery() {
+            const batteryFill = document.getElementById('batteryFill');
+            const batteryPercentage = document.getElementById('batteryPercentage');
+            let batteryLevel = 100;
+            
+            function updateBattery() {
+                batteryFill.style.width = `${batteryLevel}%`;
+                batteryPercentage.textContent = `${batteryLevel}%`;
+                
+                batteryFill.className = 'battery-fill';
+                if (batteryLevel <= 20) {
+                    batteryFill.classList.add('low');
+                } else if (batteryLevel <= 50) {
+                    batteryFill.classList.add('medium');
+                }
+            }
+            
+            if ('getBattery' in navigator) {
+                navigator.getBattery().then(batteryInfo => {
+                    batteryLevel = Math.round(batteryInfo.level * 100);
+                    updateBattery();
+                    
+                    batteryInfo.addEventListener('levelchange', () => {
+                        batteryLevel = Math.round(batteryInfo.level * 100);
+                        updateBattery();
+                    });
+                }).catch(() => {
+                    updateBattery();
+                });
+            } else {
+                updateBattery();
+            }
+        }
+        
+        function setupSocialIcons() {
+            const config = SPACE_CONFIG;
+            const socialIconsContainer = document.getElementById('socialIcons');
+            
+            config.social.forEach(link => {
+                if (!link.enabled) return;
+                
+                const a = document.createElement('a');
+                a.className = 'social-icon';
+                a.href = link.url;
+                a.target = "_blank";
+                a.rel = "noopener noreferrer";
+                a.title = link.name;
+                a.setAttribute('aria-label', link.name);
+                a.innerHTML = link.icon;
+                socialIconsContainer.appendChild(a);
+            });
+        }
+        
+        function setupStats() {
+            const config = SPACE_CONFIG;
+            const statsContainer = document.getElementById('statsContainer');
+            
+            config.stats.forEach((stat, index) => {
+                const statItem = document.createElement('div');
+                statItem.className = 'stat-item';
+                statItem.setAttribute('role', 'listitem');
+                statItem.innerHTML = `
+                    <div class="stat-value">${stat.value}</div>
+                    <div class="stat-label">${stat.label}</div>
+                `;
+                statsContainer.appendChild(statItem);
+            });
+        }
+        
+        function setupMusic() {
+            const config = SPACE_CONFIG;
+            const musicContainer = document.getElementById('musicContainer');
+            
+            if (!config.music.enabled || config.music.tracks.length === 0) return;
+            
+            // Create audio element
+            const audio = document.createElement('audio');
+            audio.id = 'bgMusic';
+            audio.loop = false;
+            audio.preload = 'auto';
+            audio.volume = config.music.volume;
+            
+            // Set first track
+            let currentTrackIndex = 0;
+            
+            function loadTrack(index) {
+                const track = config.music.tracks[index];
+                audio.src = track.url;
+                audio.type = track.type;
+                audio.setAttribute('title', track.title);
+            }
+            
+            // When track ends, play next
+            audio.addEventListener('ended', () => {
+                currentTrackIndex = (currentTrackIndex + 1) % config.music.tracks.length;
+                loadTrack(currentTrackIndex);
+                audio.play().catch(e => {
+                    if (config.advanced.enableConsoleLog) {
+                        console.log("Autoplay prevented:", e);
+                    }
+                });
+            });
+            
+            // Load first track
+            loadTrack(0);
+            
+            // Add to DOM
+            musicContainer.appendChild(audio);
+            
+            // Store reference globally for toggle function
+            window.portfolioMusic = audio;
+            
+            // Try autoplay if configured
+            if (config.music.autoplay) {
+                audio.play().catch(e => {
+                    if (config.advanced.enableConsoleLog) {
+                        console.log("Autoplay prevented:", e);
+                    }
+                });
+            }
+        }
+        
+        function toggleMusic() {
+            const audio = window.portfolioMusic;
+            if (!audio) return;
+            
+            if (audio.paused) {
+                audio.play().catch(e => {
+                    if (SPACE_CONFIG.advanced.enableConsoleLog) {
+                        console.log("Play prevented:", e);
+                    }
+                });
+            } else {
+                audio.pause();
+            }
+        }
+        
+        function detectTouchDevice() {
+            if ('ontouchstart' in window || navigator.maxTouchPoints) {
+                document.body.classList.add('touch-device');
+            }
+        }
+        
+        // Initialize verified badge
+        if (SPACE_CONFIG.profile.showVerifiedBadge) {
+            const verifiedBadge = document.getElementById('verifiedBadge');
+            verifiedBadge.innerHTML = `<svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zm3.5 7l-3 3L8 11.5 5.5 9l-1 1L8 13.5l4.5-4.5-1-1z"/></svg>`;
+            verifiedBadge.setAttribute('aria-label', 'Verified');
+        }
+        
+        // Handle page visibility changes
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                // Page is hidden, pause music if playing
+                const audio = window.portfolioMusic;
+                if (audio && !audio.paused) {
+                    audio.pause();
+                }
+            }
         });
-});
     </script>
 </body>
 </html>
