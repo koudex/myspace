@@ -3,7 +3,7 @@ const SPACE_CONFIG = {
     // ===== META & HEAD CONFIG =====
     meta: {
         title: "Kouzen Ryzishin - Space",
-        description: "Portfolio - Developer & Designer",
+        description: "Space - Developer",
         author: "Kouzen Ryzishin",
         
         // Favicon
@@ -18,14 +18,14 @@ const SPACE_CONFIG = {
             description: "Portfolio - Developer & Designer",
             image: "https://i.imgur.com/IBslu0o.jpeg",
             type: "website",
-            url: "" // Replace with actual URL
+            url: "https://koudex.github.io/myspace" // Replace with actual URL
         },
         
         // Twitter Card
         twitter: {
             card: "summary_large_image",
             title: "Kouzen Ryzishin - Portfolio",
-            description: "Portfolio - Developer & Designer",
+            description: "Space - Developer",
             image: "https://i.imgur.com/IBslu0o.jpeg"
         }
     },
@@ -155,7 +155,7 @@ const SPACE_CONFIG = {
     // ===== THEME SYSTEM CONFIG =====
     theme: {
         // Theme options: "light", "dark", "hacker", "sunset", "ocean", "forest", "cyberpunk"
-        activeTheme: "light", // Default theme
+        activeTheme: "dark", // Default theme
         accentColor: "#ff1744",
         enableTransitions: true,
         
