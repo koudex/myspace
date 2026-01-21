@@ -3,36 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-    <title id="pageTitle">Loading...</title>
+    <title>Kouzen Ryzishin - Space</title>
+    <meta name="description" content="Space - Developer">
+    <meta name="author" content="Kouzen Ryzishin">
     
-    <!-- Preload critical resources -->
-    <link rel="preload" as="image" id="preloadProfileImage">
-    <link rel="preload" as="audio" id="preloadMusic">
-    
-    <!-- Meta tags will be injected by JavaScript -->
-    <link rel="icon" id="favicon" type="image/jpeg">
-    <link rel="shortcut icon" id="shortcutIcon" type="image/jpeg">
+    <!-- Favicon -->
+    <link rel="icon" href="https://i.imgur.com/IBslu0o.jpeg" type="image/jpeg">
+    <link rel="shortcut icon" href="https://i.imgur.com/IBslu0o.jpeg" type="image/jpeg">
     
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" id="ogTitle" content="" />
-    <meta property="og:description" id="ogDescription" content="" />
-    <meta property="og:image" id="ogImage" content="" />
-    <meta property="og:type" id="ogType" content="" />
-    <meta property="og:url" id="ogUrl" content="" />
+    <meta property="og:title" content="Kouzen Ryzishin - Space">
+    <meta property="og:description" content="Space - Developer">
+    <meta property="og:image" content="https://i.imgur.com/IBslu0o.jpeg">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://koudex.github.io/myspace/">
     
     <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" id="twitterCard" content="" />
-    <meta name="twitter:title" id="twitterTitle" content="" />
-    <meta name="twitter:description" id="twitterDescription" content="" />
-    <meta name="twitter:image" id="twitterImage" content="" />
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Kouzen Ryzishin - Space">
+    <meta name="twitter:description" content="Space - Developer">
+    <meta name="twitter:image" content="https://i.imgur.com/IBslu0o.jpeg">
     
     <!-- Additional Meta Tags -->
-    <meta name="description" id="metaDescription" content="" />
-    <meta name="author" id="metaAuthor" content="" />
+    <meta property="og:site_name" content="Kouzen Ryzishin - Space">
+    <meta name="theme-color" content="#ff1744">
     
-    <!-- Google Fonts for Cyberpunk theme -->
+    <!-- Preload critical resources -->
+    <link rel="preload" as="image" href="https://i.imgur.com/IBslu0o.jpeg" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Google Fonts for Cyberpunk theme -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
     
     <style>
@@ -1305,7 +1306,7 @@
     </div>
 
     <!-- Load Config First -->
-    <script async src="config.js"></script>
+    <script src="config.js"></script>
     
     <!-- Main App Logic -->
     <script defer>
@@ -1350,62 +1351,71 @@
         // ===== INITIALIZATION FUNCTIONS =====
         
         function initializeFromConfig() {
-            const config = SPACE_CONFIG;
-            
-            // Set document title
-            document.title = config.meta.title;
-            document.getElementById('pageTitle').textContent = config.meta.title;
-            
-            // Set favicon
-            document.getElementById('favicon').href = config.meta.favicon.url;
-            document.getElementById('shortcutIcon').href = config.meta.favicon.url;
-            
-            // Preload critical resources
-            const preloadImage = document.getElementById('preloadProfileImage');
-            if (preloadImage) {
-                preloadImage.href = config.profile.image.url;
-            }
-            
-            // Set meta tags
-            setMetaTags(config.meta);
-            
-            // Set profile info
-            document.getElementById('profileName').textContent = config.profile.name;
-            document.getElementById('profileSubtitle').textContent = config.profile.subtitle;
-            document.getElementById('betaLabel').textContent = config.profile.betaLabel;
-            
-            // Set profile image
-            const profileImg = document.getElementById('profileImage');
-            profileImg.src = config.profile.image.url;
-            profileImg.alt = config.profile.image.alt;
-            profileImg.width = config.profile.image.width;
-            profileImg.height = config.profile.image.height;
-            
-            // Set footer
-            document.getElementById('footerText').textContent = config.footer.text;
-            
-            // Set timezone label
-            document.getElementById('timeLabel').textContent = config.time.timezoneLabel;
-        }
+    const config = SPACE_CONFIG;
+    
+    // Update title if different (already set in HTML)
+    if (document.title !== config.meta.title) {
+        document.title = config.meta.title;
+    }
+    
+    // Update profile info
+    document.getElementById('profileName').textContent = config.profile.name;
+    document.getElementById('profileSubtitle').textContent = config.profile.subtitle;
+    document.getElementById('betaLabel').textContent = config.profile.betaLabel;
+    
+    // Set profile image with better loading
+    const profileImg = document.getElementById('profileImage');
+    if (profileImg.src !== config.profile.image.url) {
+        profileImg.src = config.profile.image.url;
+        profileImg.alt = config.profile.image.alt;
+        profileImg.width = config.profile.image.width;
+        profileImg.height = config.profile.image.height;
+    }
+    
+    // Set footer
+    document.getElementById('footerText').textContent = config.footer.text;
+    
+    // Set timezone label
+    document.getElementById('timeLabel').textContent = config.time.timezoneLabel;
+}
         
         function setMetaTags(meta) {
-            // Open Graph
-            document.getElementById('ogTitle').content = meta.og.title;
-            document.getElementById('ogDescription').content = meta.og.description;
-            document.getElementById('ogImage').content = meta.og.image;
-            document.getElementById('ogType').content = meta.og.type;
-            document.getElementById('ogUrl').content = meta.og.url;
-            
-            // Twitter
-            document.getElementById('twitterCard').content = meta.twitter.card;
-            document.getElementById('twitterTitle').content = meta.twitter.title;
-            document.getElementById('twitterDescription').content = meta.twitter.description;
-            document.getElementById('twitterImage').content = meta.twitter.image;
-            
-            // Other meta
-            document.getElementById('metaDescription').content = meta.description;
-            document.getElementById('metaAuthor').content = meta.author;
-        }
+    // Only update if config differs from defaults
+    const currentTitle = document.title;
+    if (currentTitle !== meta.title) {
+        document.title = meta.title;
+        document.getElementById('pageTitle').textContent = meta.title;
+    }
+    
+    // Update favicon if different
+    const currentFavicon = document.getElementById('favicon').href;
+    if (currentFavicon !== meta.favicon.url) {
+        document.getElementById('favicon').href = meta.favicon.url;
+        document.getElementById('shortcutIcon').href = meta.favicon.url;
+    }
+    
+    // Update other meta tags only if they're different
+    updateMetaIfChanged('og:title', meta.og.title);
+    updateMetaIfChanged('og:description', meta.og.description);
+    updateMetaIfChanged('og:image', meta.og.image);
+    updateMetaIfChanged('og:type', meta.og.type);
+    updateMetaIfChanged('og:url', meta.og.url);
+    
+    updateMetaIfChanged('twitter:card', meta.twitter.card);
+    updateMetaIfChanged('twitter:title', meta.twitter.title);
+    updateMetaIfChanged('twitter:description', meta.twitter.description);
+    updateMetaIfChanged('twitter:image', meta.twitter.image);
+    
+    updateMetaIfChanged('description', meta.description, 'name');
+    updateMetaIfChanged('author', meta.author, 'name');
+}
+
+function updateMetaIfChanged(property, newValue, attr = 'property') {
+    const metaTag = document.querySelector(`meta[${attr}="${property}"]`);
+    if (metaTag && metaTag.content !== newValue) {
+        metaTag.content = newValue;
+    }
+}
         
         function setupThemeSystem() {
             const config = SPACE_CONFIG;
